@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+EXEC_PATH="/opt/mkplugin"
+exec ${EXEC_PATH}/mkplugin.sh $@
