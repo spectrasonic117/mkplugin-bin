@@ -25,12 +25,20 @@ BCYAN="$(tput setab 6)"
 BWHITE="$(tput setab 7)"
 BRESET="$(tput sgr 0)"
 
+# === Versions Variables ===
+
 PAPERAPI_VERSION="1.21"
 ACF_VERSION="0.5.1"
 LOMBOK_VERSION="1.18.36"
 MINIMESSAGE_VERSION="4.18.0"
 JAVA_VERSION="21"
 GRADLE_SHADOW_VERSION="9.0.0-beta4"
+
+# === Directories ===
+
+BASE_DIR="src/main"
+RESOURCES_DIR="${BASE_DIR}/resources"
+JAVA_DIR="${BASE_DIR}/java/com/spectrasonic/${PROJECT_NAME}/Utils"
 
 if [ -z "$1" ]; then
   read -p "${BMAGENTA}${BLACK} Plugin Project:${RESET} " PROJECT_NAME
@@ -39,7 +47,7 @@ elif [ -d "$1" ]; then
   exit 1
 elif [ "$1" == "--help" ] || [ "$1" == "-h" ]; then
   echo "${RED}Uso:"
-  echo "${GREEN}mkastro ${BLUE}<project-name>"
+  echo "${GREEN}mkplugin ${BLUE}<project-name>"
   exit 1
 else
   PROJECT_NAME="$1"
@@ -53,8 +61,6 @@ if [ -d .git ]; then
   command rm -rf .git/
 fi
 command git init -q
-
-rm -rf .git
 
 printf 'plugins {
     id "com.gradleup.shadow" version "'${GRADLE_SHADOW_VERSION}'"
@@ -133,8 +139,8 @@ processResources {
 
 printf "rootProject.name = '${PROJECT_NAME}'" > settings.gradle
 
-mkdir -p src/main/resources
-mkdir -p src/main/java/com/spectrasonic/${PROJECT_NAME}/Utils
+mkdir -p "${RESOURCES_DIR}"
+mkdir -p "${JAVA_DIR}"
 
 printf "name: ${PROJECT_NAME}
 version: '\${version}'
@@ -152,6 +158,9 @@ public final class Main extends JavaPlugin {
 
     @Override
     public void onEnable() {
+
+        registerCommands()
+        registerEvents()
         MessageUtils.sendStartupMessage(this);
 
     }
@@ -159,7 +168,14 @@ public final class Main extends JavaPlugin {
     @Override
     public void onDisable() {
         MessageUtils.sendShutdownMessage(this);
-        
+    }
+
+    public void registerCommands() {
+        // Set Commands Here
+    }
+
+    public void registerEvents() {
+        // Set Events Here
     }
 }
 " > ${PWD}/src/main/java/com/spectrasonic/${PROJECT_NAME}/Main.java
@@ -279,6 +295,7 @@ public final class SoundUtils {
 }
 " > ${PWD}/src/main/java/com/spectrasonic/${PROJECT_NAME}/Utils/SoundUtils.java
 
+clear
 echo "Project: ${MAGENTA}${PROJECT_NAME}${RESET} created successfully.${RESET}"
 echo "Compiler: ${CYAN}Gradle${RESET}"
 echo "Paper: ${MAGENTA}${PAPERAPI_VERSION}"
