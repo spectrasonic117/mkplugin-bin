@@ -32,7 +32,8 @@ ACF_VERSION="0.5.1"
 LOMBOK_VERSION="1.18.36"
 MINIMESSAGE_VERSION="4.18.0"
 JAVA_VERSION="21"
-GRADLE_SHADOW_VERSION="9.0.0-beta4"
+GRADLE_SHADOW_VERSION="9.0.0-beta6"
+PLUGIN_VERSION="1.0.0"
 
 # === Directories ===
 
@@ -62,54 +63,54 @@ if [ -d .git ]; then
 fi
 command git init -q
 
-printf 'plugins {
-    id "com.gradleup.shadow" version "'${GRADLE_SHADOW_VERSION}'"
-    id "java"
+printf "plugins {
+    id \"com.gradleup.shadow\" version \"${GRADLE_SHADOW_VERSION}\"
+    id \"java\"
 }
 
-group = "com.spectrasonic"
-version = "1.0.0"
+group = \"com.spectrasonic\"
+version = \"${PLUGIN_VERSION}\"
 
 repositories {
     mavenCentral()
     maven {
-        name = "papermc-repo"
-        url = "https://repo.papermc.io/repository/maven-public/"
+        name = \"papermc-repo\"
+        url = \"https://repo.papermc.io/repository/maven-public/\"
     }
     maven {
-        name = "sonatype"
-        url = "https://oss.sonatype.org/content/groups/public/"
+        name = \"sonatype\"
+        url = \"https://oss.sonatype.org/content/groups/public/\"
     }
     maven {
-        name = "aikar"
-        url = "https://repo.aikar.co/content/groups/aikar/"
+        name = \"aikar\"
+        url = \"https://repo.aikar.co/content/groups/aikar/\"
     }
 }
 
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:'${PAPERAPI_VERSION}'-R0.1-SNAPSHOT") // Paper
+    compileOnly(\"io.papermc.paper:paper-api:${PAPERAPI_VERSION}-R0.1-SNAPSHOT\") // Paper
 
     // ACF Aikar
-    implementation "co.aikar:acf-paper:'${ACF_VERSION}'-SNAPSHOT"
+    implementation \"co.aikar:acf-paper:${ACF_VERSION}-SNAPSHOT\"
 
     // Lombok
-    compileOnly "org.projectlombok:lombok:1.18.36"
+    compileOnly \"org.projectlombok:lombok:1.18.36\"
 
     // Minimessage - Adventure
-    implementation "net.kyori:adventure-text-minimessage:'${MINIMESSAGE_VERSION}'"
-    implementation "net.kyori:adventure-api:'${MINIMESSAGE_VERSION}'"
-    // implementation "net.kyori:adventure-text-serializer-legacy:'${MINIMESSAGE_VERSION}'" // Legacy
+    implementation \"net.kyori:adventure-text-minimessage:${MINIMESSAGE_VERSION}\"
+    implementation \"net.kyori:adventure-api:${MINIMESSAGE_VERSION}\"
+    // implementation \"net.kyori:adventure-text-serializer-legacy:${MINIMESSAGE_VERSION}\" // Legacy
 
 }
 
 shadowJar {
-    relocate "co.aikar.commands", "com.spectrasonic.'${PROJECT_NAME}'.acf"
-    relocate "co.aikar.locales", "com.spectrasonic.'${PROJECT_NAME}'.locales"
+    relocate \"co.aikar.commands\", \"com.spectrasonic.${PROJECT_NAME}.acf\"
+    relocate \"co.aikar.locales\", \"com.spectrasonic.${PROJECT_NAME}.locales\"
 }
 
 build.dependsOn shadowJar
 
-def targetJavaVersion = '${JAVA_VERSION}'
+def targetJavaVersion = \"${JAVA_VERSION}\"
 java {
     def javaVersion = JavaVersion.toVersion(targetJavaVersion)
     sourceCompatibility = javaVersion
@@ -120,7 +121,7 @@ java {
 }
 
 tasks.withType(JavaCompile).configureEach {
-    options.encoding = "UTF-8"
+    options.encoding = \"UTF-8\"
 
     if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible()) {
         options.release.set(targetJavaVersion)
@@ -130,24 +131,23 @@ tasks.withType(JavaCompile).configureEach {
 processResources {
     def props = [version: version]
     inputs.properties props
-    filteringCharset "UTF-8"
-    filesMatching("plugin.yml") {
+    filteringCharset \"UTF-8\"
+    filesMatching(\"plugin.yml\") {
         expand props
     }
-}' > build.gradle
-
+}" > build.gradle
 
 printf "rootProject.name = '${PROJECT_NAME}'" > settings.gradle
 
-mkdir -p "${RESOURCES_DIR}"
-mkdir -p "${JAVA_DIR}"
+mkdir -p "$PWD/src/main/resources"
+mkdir -p "$PWD/src/main/java/com/spectrasonic/${PROJECT_NAME}/Utils"
 
 printf "name: ${PROJECT_NAME}
 version: '\${version}'
 main: com.spectrasonic.${PROJECT_NAME}.Main
 api-version: '${PAPERAPI_VERSION}'
 authors: [Spectrasonic]
-" > src/main/resources/plugin.yml
+" > $PWD/src/main/resources/plugin.yml
 
 printf "package com.spectrasonic.${PROJECT_NAME};
 
