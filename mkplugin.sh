@@ -120,13 +120,13 @@ java {
     }
 }
 
-tasks.withType(JavaCompile).configureEach {
-    options.encoding = \"UTF-8\"
-
-    if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible()) {
-        options.release.set(targetJavaVersion)
-    }
-}
+//  tasks.withType(JavaCompile).configureEach {
+//      options.encoding = 'UTF-8'
+//  
+//      if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible()) {
+//          options.release.set(targetJavaVersion)
+//      }
+//  }
 
 processResources {
     def props = [version: version]
@@ -192,7 +192,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 public final class MessageUtils {
 
     public static final String DIVIDER = \"<gray>----------------------------------------</gray>\";
-    public static final String PREFIX = \"<gray>[<gold>${PROJECT_NAME}</gold>]</gray> <gold>»</gold>\";
+    public static final String PREFIX = \"<gray>[<gold>${PROJECT_NAME}</gold>]</gray> <gold>»</gold> \";
 
     private static final MiniMessage miniMessage = MiniMessage.miniMessage();
 
