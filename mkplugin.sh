@@ -159,8 +159,8 @@ public final class Main extends JavaPlugin {
     @Override
     public void onEnable() {
 
-        registerCommands()
-        registerEvents()
+        registerCommands();
+        registerEvents();
         MessageUtils.sendStartupMessage(this);
 
     }
