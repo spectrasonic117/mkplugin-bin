@@ -61,7 +61,10 @@ cd $PWD/$PROJECT_NAME
 if [ -d .git ]; then
   command rm -rf .git/
 fi
+
 command git init -q
+command git add .
+command git commit -m "🌱 - Initial commit"
 
 printf "plugins {
     id \"com.gradleup.shadow\" version \"${GRADLE_SHADOW_VERSION}\"
