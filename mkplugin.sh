@@ -298,7 +298,6 @@ public final class SoundUtils {
 }
 " > ${PWD}/src/main/java/com/spectrasonic/${PROJECT_NAME}/Utils/SoundUtils.java
 
-clear
 echo "Project: ${MAGENTA}${PROJECT_NAME}${RESET} created successfully.${RESET}"
 echo "Compiler: ${CYAN}Gradle${RESET}"
 echo "Paper: ${MAGENTA}${PAPERAPI_VERSION}"
