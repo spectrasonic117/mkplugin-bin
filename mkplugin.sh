@@ -63,8 +63,7 @@ if [ -d .git ]; then
 fi
 
 command git init -q
-command git add .
-command git commit -m "🌱 - Initial commit"
+
 
 printf "plugins {
     id \"com.gradleup.shadow\" version \"${GRADLE_SHADOW_VERSION}\"
@@ -298,6 +297,8 @@ public final class SoundUtils {
 }
 " > ${PWD}/src/main/java/com/spectrasonic/${PROJECT_NAME}/Utils/SoundUtils.java
 
+command git add .
+command git commit -m "🌱 - Initial commit"
 echo "Project: ${MAGENTA}${PROJECT_NAME}${RESET} created successfully.${RESET}"
 echo "Compiler: ${CYAN}Gradle${RESET}"
 echo "Paper: ${MAGENTA}${PAPERAPI_VERSION}"
