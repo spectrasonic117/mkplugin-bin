@@ -27,9 +27,9 @@ BRESET="$(tput sgr 0)"
 
 # === Versions Variables ===
 
-PAPERAPI_VERSION="1.21"
+PAPERAPI_VERSION="1.21.1"
 ACF_VERSION="0.5.1"
-LOMBOK_VERSION="1.18.30"
+LOMBOK_VERSION="1.18.36"
 MINIMESSAGE_VERSION="4.18.0"
 JAVA_VERSION="21"
 GRADLE_SHADOW_VERSION="9.0.0-beta8"
@@ -66,6 +66,7 @@ command git init -q
 
 
 printf "plugins {
+    id(\"io.papermc.paperweight.userdev\") version \"2.0.0-beta.14\"
     id \"com.gradleup.shadow\" version \"${GRADLE_SHADOW_VERSION}\"
     id \"java\"
 }
@@ -74,6 +75,7 @@ group = \"com.spectrasonic\"
 version = \"${PLUGIN_VERSION}\"
 
 repositories {
+    gradlePluginPortal()
     mavenCentral()
     maven {
         name = \"papermc-repo\"
@@ -96,13 +98,18 @@ dependencies {
     implementation \"co.aikar:acf-paper:${ACF_VERSION}-SNAPSHOT\"
 
     // Lombok
-    compileOnly \"org.projectlombok:lombok:1.18.36\"
+    compileOnly \"org.projectlombok:lombok:${LOMBOK_VERSION}\"
+    annotationProcessor \"org.projectlombok:lombok:${LOMBOK_VERSION}\"
+    testCompileOnly \"org.projectlombok:lombok:${LOMBOK_VERSION}\" 
+    testAnnotationProcessor \"org.projectlombok:lombok:${LOMBOK_VERSION}\"
 
     // Minimessage - Adventure
     implementation \"net.kyori:adventure-text-minimessage:${MINIMESSAGE_VERSION}\"
     implementation \"net.kyori:adventure-api:${MINIMESSAGE_VERSION}\"
     // implementation \"net.kyori:adventure-text-serializer-legacy:${MINIMESSAGE_VERSION}\" // Legacy
 
+    // Paperweight
+    paperweight.paperDevBundle(\"${PAPERAPI_VERSION}-R0.1-SNAPSHOT\") 
 }
 
 shadowJar {
