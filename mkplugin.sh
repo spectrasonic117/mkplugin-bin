@@ -26,13 +26,26 @@ BWHITE="$(tput setab 7)"
 BRESET="$(tput sgr 0)"
 
 # === Versions Variables ===
+#
+# Adventure-Text-Minimessage
+adventure_content=$(curl -s "https://central.sonatype.com/artifact/net.kyori/adventure-text-minimessage")
+MINIMESSAGE_VERSION=$(echo "$adventure_content" | grep -oE 'pkg:maven/net\.kyori/adventure-text-minimessage@([0-9]+\.[0-9]+\.[0-9]+)' | sed 's/.*@//' | head -n 1)
+
+# Lombok
+lombok_content=$(curl -s "https://central.sonatype.com/artifact/org.projectlombok/lombok")
+LOMBOK_VERSION=$(echo "$lombok_content" | grep -oE 'pkg:maven/org\.projectlombok/lombok@([0-9]+\.[0-9]+\.[0-9]+)' | sed 's/.*@//' | head -n 1)
+
+# Shadow-Gradle-Plugin
+shadow_gradle_content=$(curl -s "https://central.sonatype.com/artifact/com.gradleup.shadow/shadow-gradle-plugin")
+GRADLE_SHADOW_VERSION=$(echo "$shadow_gradle_content" | grep -oE 'pkg:maven/com.gradleup.shadow/shadow-gradle-plugin@([0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9]+)?)' | sed 's/.*@//' | head -n 1)
+
 
 PAPERAPI_VERSION="1.21.1"
 ACF_VERSION="0.5.1"
-LOMBOK_VERSION="1.18.36"
-MINIMESSAGE_VERSION="4.18.0"
+# LOMBOK_VERSION="1.18.36"
+# MINIMESSAGE_VERSION="4.18.0"
 JAVA_VERSION="21"
-GRADLE_SHADOW_VERSION="9.0.0-beta8"
+#GRADLE_SHADOW_VERSION="9.0.0-beta8"
 PLUGIN_VERSION="1.0.0"
 
 # === Directories ===
@@ -100,7 +113,7 @@ dependencies {
     // Lombok
     compileOnly \"org.projectlombok:lombok:${LOMBOK_VERSION}\"
     annotationProcessor \"org.projectlombok:lombok:${LOMBOK_VERSION}\"
-    testCompileOnly \"org.projectlombok:lombok:${LOMBOK_VERSION}\" 
+    testCompileOnly \"org.projectlombok:lombok:${LOMBOK_VERSION}\"
     testAnnotationProcessor \"org.projectlombok:lombok:${LOMBOK_VERSION}\"
 
     // Minimessage - Adventure
@@ -109,7 +122,7 @@ dependencies {
     // implementation \"net.kyori:adventure-text-serializer-legacy:${MINIMESSAGE_VERSION}\" // Legacy
 
     // Paperweight
-    paperweight.paperDevBundle(\"${PAPERAPI_VERSION}-R0.1-SNAPSHOT\") 
+    paperweight.paperDevBundle(\"${PAPERAPI_VERSION}-R0.1-SNAPSHOT\")
 }
 
 shadowJar {
@@ -131,7 +144,7 @@ java {
 
 //  tasks.withType(JavaCompile).configureEach {
 //      options.encoding = 'UTF-8'
-//  
+//
 //      if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible()) {
 //          options.release.set(targetJavaVersion)
 //      }
