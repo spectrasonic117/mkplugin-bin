@@ -79,7 +79,7 @@ command git init -q
 
 
 printf "plugins {
-    id(\"io.papermc.paperweight.userdev\") version \"2.0.0-beta.14\"
+    // id(\"io.papermc.paperweight.userdev\") version \"2.0.0-beta.14\"
     id \"com.gradleup.shadow\" version \"${GRADLE_SHADOW_VERSION}\"
     id \"java\"
 }
@@ -122,7 +122,7 @@ dependencies {
     // implementation \"net.kyori:adventure-text-serializer-legacy:${MINIMESSAGE_VERSION}\" // Legacy
 
     // Paperweight
-    paperweight.paperDevBundle(\"${PAPERAPI_VERSION}-R0.1-SNAPSHOT\")
+    // paperweight.paperDevBundle(\"${PAPERAPI_VERSION}-R0.1-SNAPSHOT\")
 }
 
 shadowJar {
