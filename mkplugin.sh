@@ -41,6 +41,7 @@ GRADLE_SHADOW_VERSION=$(echo "$shadow_gradle_content" | grep -oE 'pkg:maven/com.
 
 
 PAPERAPI_VERSION="1.21.1"
+API_VERSION="1.21"
 ACF_VERSION="0.5.1"
 # LOMBOK_VERSION="1.18.36"
 # MINIMESSAGE_VERSION="4.18.0"
@@ -128,9 +129,17 @@ dependencies {
 shadowJar {
     relocate \"co.aikar.commands\", \"com.spectrasonic.${PROJECT_NAME}.acf\"
     relocate \"co.aikar.locales\", \"com.spectrasonic.${PROJECT_NAME}.locales\"
+    destinationDirectory = file(\"${rootDir}/out\")
+    // archiveFileName = \"DiscGlowing-${version}.jar\" 
 }
 
 build.dependsOn shadowJar
+
+task cleanOut(type: Delete) {
+    delete fileTree(\"${rootDir}/out\") 
+}
+
+build.dependsOn cleanOut
 
 def targetJavaVersion = \"${JAVA_VERSION}\"
 java {
@@ -167,7 +176,7 @@ mkdir -p "$PWD/src/main/java/com/spectrasonic/${PROJECT_NAME}/Utils"
 printf "name: ${PROJECT_NAME}
 version: '\${version}'
 main: com.spectrasonic.${PROJECT_NAME}.Main
-api-version: '${PAPERAPI_VERSION}'
+api-version: '${API_VERSION}'
 authors: [Spectrasonic]
 " > $PWD/src/main/resources/plugin.yml
 
