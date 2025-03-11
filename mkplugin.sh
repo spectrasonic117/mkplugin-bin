@@ -114,8 +114,8 @@ dependencies {
     // Lombok
     compileOnly \"org.projectlombok:lombok:${LOMBOK_VERSION}\"
     annotationProcessor \"org.projectlombok:lombok:${LOMBOK_VERSION}\"
-    testCompileOnly \"org.projectlombok:lombok:${LOMBOK_VERSION}\"
-    testAnnotationProcessor \"org.projectlombok:lombok:${LOMBOK_VERSION}\"
+    // testCompileOnly \"org.projectlombok:lombok:${LOMBOK_VERSION}\"
+    // testAnnotationProcessor \"org.projectlombok:lombok:${LOMBOK_VERSION}\"
 
     // Minimessage - Adventure
     implementation \"net.kyori:adventure-text-minimessage:${MINIMESSAGE_VERSION}\"
@@ -129,14 +129,14 @@ dependencies {
 shadowJar {
     relocate \"co.aikar.commands\", \"com.spectrasonic.${PROJECT_NAME}.acf\"
     relocate \"co.aikar.locales\", \"com.spectrasonic.${PROJECT_NAME}.locales\"
-    destinationDirectory = file(\"${rootDir}/out\")
-    // archiveFileName = \"DiscGlowing-${version}.jar\" 
+    destinationDirectory = file(\"\${rootDir}/out\")
+    archiveFileName = \"\${rootProject.name}-\${version}.jar\" 
 }
 
 build.dependsOn shadowJar
 
 task cleanOut(type: Delete) {
-    delete fileTree(\"${rootDir}/out\") 
+ c   delete fileTree(\"\${rootDir}/out\") 
 }
 
 build.dependsOn cleanOut
@@ -162,7 +162,7 @@ java {
 processResources {
     def props = [version: version]
     inputs.properties props
-    filteringCharset \"UTF-8\"
+    filteringCharset = \"UTF-8\"
     filesMatching(\"plugin.yml\") {
         expand props
     }
