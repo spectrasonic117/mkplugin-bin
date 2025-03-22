@@ -135,12 +135,6 @@ shadowJar {
 
 build.dependsOn shadowJar
 
-task cleanOut(type: Delete) {
-    delete fileTree(\"\${rootDir}/out\") 
-}
-
-build.dependsOn cleanOut
-
 def targetJavaVersion = \"${JAVA_VERSION}\"
 java {
     def javaVersion = JavaVersion.toVersion(targetJavaVersion)
@@ -312,7 +306,7 @@ public final class MessageUtils {
     }
 
     public static void sendActionBar(Player player, String message) {
-        player.sendActionBar(miniMessage.deserialize(PREFIX + message));
+        player.sendActionBar(miniMessage.deserialize(message));
     }
 
     public static void broadcastTitle(String title, String subtitle, int fadeIn, int stay, int fadeOut) {
@@ -335,7 +329,7 @@ public final class MessageUtils {
         // );
 
     public static void broadcastActionBar(String message) {
-        final Component component = miniMessage.deserialize(PREFIX + message);
+        final Component component = miniMessage.deserialize(message);
         Bukkit.getOnlinePlayers().forEach(player -> player.sendActionBar(component));
     }
 
