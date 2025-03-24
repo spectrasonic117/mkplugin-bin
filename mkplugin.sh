@@ -14,7 +14,6 @@ BOLD="$(tput bold)"
 UNDERLINE="$(tput smul)"
 ITALIC="$(tput sitm)"
 INVERT="$(tput smso)"
-sudo
 BBLACK="$(tput setab 0)"
 BRED="$(tput setab 1)"
 BGREEN="$(tput setab 2)"
