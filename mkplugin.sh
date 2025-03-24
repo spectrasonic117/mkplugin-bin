@@ -14,7 +14,7 @@ BOLD="$(tput bold)"
 UNDERLINE="$(tput smul)"
 ITALIC="$(tput sitm)"
 INVERT="$(tput smso)"
-
+sudo
 BBLACK="$(tput setab 0)"
 BRED="$(tput setab 1)"
 BGREEN="$(tput setab 2)"
@@ -69,7 +69,7 @@ else
 fi
 
 
-git clone git@github.com:spectrasonic117/mkplugin.git -q $PWD/$PROJECT_NAME
+git clone git@github.com:spectrasonic117/mkplugin.git -q $PWD/$PROJECT_NAME --depth=1
 cd $PWD/$PROJECT_NAME
 
 if [ -d .git ]; then
@@ -441,8 +441,7 @@ public class ItemBuilder {
 # Git Commands
 command git add .
 command git commit -m "🌱 - Initial commit"
-command git branch -M dev
-command git switch dev
+command git checkout -b dev
 
 echo " "
 # Print Project Info
