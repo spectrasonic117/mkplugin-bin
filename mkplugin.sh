@@ -121,7 +121,6 @@ dependencies {
     // Minimessage - Adventure
     implementation \"net.kyori:adventure-text-minimessage:${MINIMESSAGE_VERSION}\"
     implementation \"net.kyori:adventure-api:${MINIMESSAGE_VERSION}\"
-    // implementation \"net.kyori:adventure-text-serializer-legacy:${MINIMESSAGE_VERSION}\" // Legacy
 
     // Paperweight
     // paperweight.paperDevBundle(\"${PAPERAPI_VERSION}-R0.1-SNAPSHOT\")
