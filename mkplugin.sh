@@ -169,14 +169,16 @@ mkdir -p "$PWD/src/main/java/com/${AUTHOR}/${PROJECT_NAME}/Utils"
 
 printf "name: ${PROJECT_NAME}
 version: '\${version}'
-    main: com.${AUTHOR}.${PROJECT_NAME}.Main
+main: com.${AUTHOR}.${PROJECT_NAME}.Main
 api-version: '${API_VERSION}'
 authors: [Spectrasonic]
 " > $PWD/src/main/resources/plugin.yml
 
-    printf "package com.${AUTHOR}.${PROJECT_NAME};
+touch $PWD/src/main/resources/config.yml
 
-    import com.${AUTHOR}.${PROJECT_NAME}.Utils.MessageUtils;
+printf "package com.${AUTHOR}.${PROJECT_NAME};
+
+import com.${AUTHOR}.${PROJECT_NAME}.Utils.MessageUtils;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class Main extends JavaPlugin {
