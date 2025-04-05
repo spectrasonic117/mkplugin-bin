@@ -48,11 +48,13 @@ JAVA_VERSION="21"
 #GRADLE_SHADOW_VERSION="9.0.0-beta8"
 PLUGIN_VERSION="1.0.0"
 
+AUTHOR="spectrasonic"
+
 # === Directories ===
 
 BASE_DIR="src/main"
 RESOURCES_DIR="${BASE_DIR}/resources"
-JAVA_DIR="${BASE_DIR}/java/com/spectrasonic/${PROJECT_NAME}/Utils"
+JAVA_DIR="${BASE_DIR}/java/com/${AUTHOR}/${PROJECT_NAME}/Utils"
 
 if [ -z "$1" ]; then
   read -p "${BMAGENTA}${BLACK} Plugin Project:${RESET} " PROJECT_NAME
@@ -84,7 +86,7 @@ printf "plugins {
     id \"java\"
 }
 
-group = \"com.spectrasonic\"
+group = \"com.${AUTHOR}\"
 version = \"${PLUGIN_VERSION}\"
 
 repositories {
@@ -126,8 +128,8 @@ dependencies {
 }
 
 shadowJar {
-    relocate \"co.aikar.commands\", \"com.spectrasonic.${PROJECT_NAME}.acf\"
-    relocate \"co.aikar.locales\", \"com.spectrasonic.${PROJECT_NAME}.locales\"
+    relocate \"co.aikar.commands\", \"com.${AUTHOR}.${PROJECT_NAME}.acf\"
+    relocate \"co.aikar.locales\", \"com.${AUTHOR}.${PROJECT_NAME}.locales\"
     destinationDirectory = file(\"\${rootDir}/out\")
     archiveFileName = \"\${rootProject.name}-\${version}.jar\" 
 }
@@ -164,18 +166,18 @@ processResources {
 printf "rootProject.name = '${PROJECT_NAME}'" > settings.gradle
 
 mkdir -p "$PWD/src/main/resources"
-mkdir -p "$PWD/src/main/java/com/spectrasonic/${PROJECT_NAME}/Utils"
+mkdir -p "$PWD/src/main/java/com/${AUTHOR}/${PROJECT_NAME}/Utils"
 
 printf "name: ${PROJECT_NAME}
 version: '\${version}'
-main: com.spectrasonic.${PROJECT_NAME}.Main
+    main: com.${AUTHOR}.${PROJECT_NAME}.Main
 api-version: '${API_VERSION}'
 authors: [Spectrasonic]
 " > $PWD/src/main/resources/plugin.yml
 
-printf "package com.spectrasonic.${PROJECT_NAME};
+    printf "package com.${AUTHOR}.${PROJECT_NAME};
 
-import com.spectrasonic.${PROJECT_NAME}.Utils.MessageUtils;
+    import com.${AUTHOR}.${PROJECT_NAME}.Utils.MessageUtils;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class Main extends JavaPlugin {
@@ -202,9 +204,9 @@ public final class Main extends JavaPlugin {
         // Set Events Here
     }
 }
-" > ${PWD}/src/main/java/com/spectrasonic/${PROJECT_NAME}/Main.java
+" > ${PWD}/src/main/java/com/${AUTHOR}/${PROJECT_NAME}/Main.java
 
-printf "package com.spectrasonic.${PROJECT_NAME}.Utils;
+printf "package com.${AUTHOR}.${PROJECT_NAME}.Utils;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -336,9 +338,9 @@ public final class MessageUtils {
     // MiniMessageUtils.broadcastActionBar(\"<yellow>¡Evento e…special activado!</yellow>\");
 
 }
-" > ${PWD}/src/main/java/com/spectrasonic/${PROJECT_NAME}/Utils/MessageUtils.java
+" > ${PWD}/src/main/java/com/${AUTHOR}/${PROJECT_NAME}/Utils/MessageUtils.java
 
-printf "package com.spectrasonic.${PROJECT_NAME}.Utils;
+printf "package com.${AUTHOR}.${PROJECT_NAME}.Utils;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
@@ -362,9 +364,9 @@ public final class SoundUtils {
         );
     }
 }
-" > ${PWD}/src/main/java/com/spectrasonic/${PROJECT_NAME}/Utils/SoundUtils.java
+" > ${PWD}/src/main/java/com/${AUTHOR}/${PROJECT_NAME}/Utils/SoundUtils.java
 
-printf "package com.spectrasonic.${PROJECT_NAME}.Utils;
+printf "package com.${AUTHOR}.${PROJECT_NAME}.Utils;
 
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Material;
@@ -430,12 +432,17 @@ public class ItemBuilder {
         }
     }
 
+    public ItemBuilder setUnbreakable(boolean unbreakable) {
+        meta.setUnbreakable(unbreakable);
+        return this;
+    }
+
     public ItemStack build() {
         meta.addItemFlags(flags.toArray(new ItemFlag[0]));
         item.setItemMeta(meta);
         return item;
     }
-}" > ${PWD}/src/main/java/com/spectrasonic/${PROJECT_NAME}/Utils/ItemBuilder.java
+}" > ${PWD}/src/main/java/com/${AUTHOR}/${PROJECT_NAME}/Utils/ItemBuilder.java
 
 # Git Commands
 command git add .
