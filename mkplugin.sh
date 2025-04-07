@@ -54,7 +54,7 @@ AUTHOR="spectrasonic"
 
 BASE_DIR="src/main"
 RESOURCES_DIR="${BASE_DIR}/resources"
-JAVA_DIR="${BASE_DIR}/java/com/${AUTHOR}/${PROJECT_NAME}/Utils"
+JAVA_DIR="${BASE_DIR}/java/com/${AUTHOR}/${PROJECT_NAME}"
 
 if [ -z "$1" ]; then
   read -p "${BMAGENTA}${BLACK} Plugin Project:${RESET} " PROJECT_NAME
@@ -165,7 +165,7 @@ processResources {
 printf "rootProject.name = '${PROJECT_NAME}'" > settings.gradle
 
 mkdir -p "$PWD/src/main/resources"
-mkdir -p "$PWD/src/main/java/com/${AUTHOR}/${PROJECT_NAME}/Utils"
+mkdir -p "$PWD/src/main/java/com/${AUTHOR}/${PROJECT_NAME}"
 
 printf "name: ${PROJECT_NAME}
 version: '\${version}'
