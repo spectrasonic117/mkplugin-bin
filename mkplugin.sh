@@ -178,7 +178,9 @@ touch $PWD/src/main/resources/config.yml
 
 printf "package com.${AUTHOR}.${PROJECT_NAME};
 
+import com.${AUTHOR}.Utils.CommandUtils;
 import com.${AUTHOR}.Utils.MessageUtils;
+
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class Main extends JavaPlugin {
@@ -188,6 +190,7 @@ public final class Main extends JavaPlugin {
 
         registerCommands();
         registerEvents();
+        CommandUtils.setPlugin(this);
         MessageUtils.sendStartupMessage(this);
 
     }
