@@ -1,5 +1,12 @@
 #!/usr/bin/env sh
 
+# ███╗   ███╗██╗  ██╗██████╗ ██╗     ██╗   ██╗ ██████╗ ██╗███╗   ██╗
+# ████╗ ████║██║ ██╔╝██╔══██╗██║     ██║   ██║██╔════╝ ██║████╗  ██║
+# ██╔████╔██║█████╔╝ ██████╔╝██║     ██║   ██║██║  ███╗██║██╔██╗ ██║
+# ██║╚██╔╝██║██╔═██╗ ██╔═══╝ ██║     ██║   ██║██║   ██║██║██║╚██╗██║
+# ██║ ╚═╝ ██║██║  ██╗██║     ███████╗╚██████╔╝╚██████╔╝██║██║ ╚████║
+# ╚═╝     ╚═╝╚═╝  ╚═╝╚═╝     ╚══════╝ ╚═════╝  ╚═════╝ ╚═╝╚═╝  ╚═══╝
+
 # === Colors ===
 BLACK="$(tput setaf 0)"
 RED="$(tput setaf 1)"
@@ -57,16 +64,16 @@ RESOURCES_DIR="${BASE_DIR}/resources"
 JAVA_DIR="${BASE_DIR}/java/com/${AUTHOR}/${PROJECT_NAME}"
 
 if [ -z "$1" ]; then
-  read -p "${BMAGENTA}${BLACK} Plugin Project:${RESET} " PROJECT_NAME
+    read -p "${BMAGENTA}${BLACK} Plugin Project:${RESET} " PROJECT_NAME
 elif [ -d "$1" ]; then
-  echo "${RED}El proyecto ya existe, ${WHITE}Usa otro nombre!"
-  exit 1
+    echo "${RED}El proyecto ya existe, ${WHITE}Usa otro nombre!"
+    exit 1
 elif [ "$1" == "--help" ] || [ "$1" == "-h" ]; then
-  echo "${RED}Uso:"
-  echo "${GREEN}mkplugin ${BLUE}<project-name>"
-  exit 1
+    echo "${RED}Uso:"
+    echo "${GREEN}mkplugin ${BLUE}<project-name>"
+    exit 1
 else
-  PROJECT_NAME="$1"
+    PROJECT_NAME="$1"
 fi
 
 
@@ -74,14 +81,14 @@ git clone git@github.com:spectrasonic117/mkplugin.git -q $PWD/$PROJECT_NAME --de
 cd $PWD/$PROJECT_NAME
 
 if [ -d .git ]; then
-  command rm -rf .git/
+    command rm -rf .git/
 fi
 
 command git init -q
 
 
 printf "plugins {
-    // id(\"io.papermc.paperweight.userdev\") version \"2.0.0-beta.14\"
+    id(\"io.papermc.paperweight.userdev\") version \"2.0.0-beta.14\"
     id \"com.gradleup.shadow\" version \"${GRADLE_SHADOW_VERSION}\"
     id \"java\"
 }
@@ -107,7 +114,8 @@ repositories {
 }
 
 dependencies {
-    compileOnly(\"io.papermc.paper:paper-api:${PAPERAPI_VERSION}-R0.1-SNAPSHOT\") // Paper
+    // compileOnly(\"io.papermc.paper:paper-api:${PAPERAPI_VERSION}-R0.1-SNAPSHOT\") // Paper
+    paperweight.paperDevBundle(\"${PAPERAPI_VERSION}-R0.1-SNAPSHOT\")
 
     // ACF Aikar
     implementation \"co.aikar:acf-paper:${ACF_VERSION}-SNAPSHOT\"
@@ -115,15 +123,10 @@ dependencies {
     // Lombok
     compileOnly \"org.projectlombok:lombok:${LOMBOK_VERSION}\"
     annotationProcessor \"org.projectlombok:lombok:${LOMBOK_VERSION}\"
-    // testCompileOnly \"org.projectlombok:lombok:${LOMBOK_VERSION}\"
-    // testAnnotationProcessor \"org.projectlombok:lombok:${LOMBOK_VERSION}\"
 
     // Minimessage - Adventure
     implementation \"net.kyori:adventure-text-minimessage:${MINIMESSAGE_VERSION}\"
     implementation \"net.kyori:adventure-api:${MINIMESSAGE_VERSION}\"
-
-    // Paperweight
-    // paperweight.paperDevBundle(\"${PAPERAPI_VERSION}-R0.1-SNAPSHOT\")
 }
 
 shadowJar {
@@ -134,6 +137,7 @@ shadowJar {
 }
 
 build.dependsOn shadowJar
+build.finalizedBy reobfJar
 
 def targetJavaVersion = \"${JAVA_VERSION}\"
 java {
@@ -146,7 +150,7 @@ java {
 }
 
 //  tasks.withType(JavaCompile).configureEach {
-//      options.encoding = 'UTF-8'
+//      options.encoding = \"UTF-8\"
 //
 //      if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible()) {
 //          options.release.set(targetJavaVersion)
