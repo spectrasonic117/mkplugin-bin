@@ -256,6 +256,7 @@ if [ "$COMPILER" == "maven" ]; then
                                 <shadedPattern>${AUTHOR}.locales</shadedPattern>
                             </relocation>
                         </relocations>
+                        <shadedArtifactAttached>true</shadedArtifactAttached>
                     </configuration>
                     <executions>
                         <execution>
