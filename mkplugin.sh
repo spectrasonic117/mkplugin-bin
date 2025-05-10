@@ -31,8 +31,6 @@ BCYAN="$(tput setab 6)"
 BWHITE="$(tput setab 7)"
 BRESET="$(tput sgr 0)"
 
-
-
 function select_option {
 
     # little helpers for terminal print control and key input
@@ -164,7 +162,7 @@ if [ "$COMPILER" == "maven" ]; then
             <paper.version>${PAPERAPI_VERSION}-R0.1-SNAPSHOT</paper.version>
             <acf.version>${ACF_VERSION}-SNAPSHOT</acf.version>
             <lombok.version>${LOMBOK_VERSION}</lombok.version>
-            <adventure.version>4.21.0</adventure.version>
+            <adventure.version>${MINIMESSAGE_VERSION}</adventure.version>
         </properties>
 
         <repositories>
@@ -183,25 +181,26 @@ if [ "$COMPILER" == "maven" ]; then
         </repositories>
 
         <dependencies>
+            <!-- Paper API -->
             <dependency>
-                <groupId>io.papermc.paperweight.userdev</groupId>
-                <artifactId>io.papermc.paperweight.userdev.gradle.plugin</artifactId>
-                <version>2.0.0-beta.16</version>
-                <type>pom</type>
+                <groupId>io.papermc.paper</groupId>
+                <artifactId>paper-api</artifactId>
+                <version>\${paper.version}</version>
+                <scope>provided</scope>
             </dependency>
 
             <!-- ACF Aikar -->
             <dependency>
                 <groupId>co.aikar</groupId>
                 <artifactId>acf-paper</artifactId>
-                <version>$\{acf.version}</version>
+                <version>\${acf.version}</version>
             </dependency>
 
             <!-- Lombok -->
             <dependency>
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>
-                <version>$\{lombok.version}</version>
+                <version>\${lombok.version}</version>
                 <scope>provided</scope>
             </dependency>
 
@@ -209,12 +208,12 @@ if [ "$COMPILER" == "maven" ]; then
             <dependency>
                 <groupId>net.kyori</groupId>
                 <artifactId>adventure-text-minimessage</artifactId>
-                <version>$\{adventure.version}</version>
+                <version>\${adventure.version}</version>
             </dependency>
             <dependency>
                 <groupId>net.kyori</groupId>
                 <artifactId>adventure-api</artifactId>
-                <version>$\{adventure.version}</version>
+                <version>\${adventure.version}</version>
             </dependency>
         </dependencies>
 
@@ -225,9 +224,9 @@ if [ "$COMPILER" == "maven" ]; then
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>3.11.0</version>
                     <configuration>
-                        <source>$\{maven.compiler.source}</source>
-                        <target>$\{maven.compiler.target}</target>
-                        <encoding>$\{project.build.sourceEncoding}</encoding>
+                        <source>\${maven.compiler.source}</source>
+                        <target>\${maven.compiler.target}</target>
+                        <encoding>\${project.build.sourceEncoding}</encoding>
                         <release>21</release>
                     </configuration>
                 </plugin>
@@ -238,18 +237,20 @@ if [ "$COMPILER" == "maven" ]; then
                     <artifactId>maven-shade-plugin</artifactId>
                     <version>3.6.0</version>
                     <configuration>
-                                <dependencyReducedPomLocation>$\{project.build.directory}/dependency-reduced-pom.xml</dependencyReducedPomLocation>
-                                <relocations>
-                                    <relocation>
-                                        <pattern>co.aikar.commands</pattern>
-                                        <shadedPattern.${AUTHOR}.acf</shadedPattern>
-                                    </relocation>
-                                    <relocation>
-                                        <pattern>co.aikar.locales</pattern>
-                                        <shadedPattern.${AUTHOR}.locales</shadedPattern>
-                                    </relocation>
-                                </relocations>
-                            </configuration>
+                        <outputDirectory>\${project.basedir}/out</outputDirectory>
+                        <finalName>\${project.artifactId}-\${project.version}</finalName>
+                        <dependencyReducedPomLocation>\${project.build.directory}/dependency-reduced-pom.xml</dependencyReducedPomLocation>
+                        <relocations>
+                            <relocation>
+                                <pattern>co.aikar.commands</pattern>
+                                <shadedPattern>${AUTHOR}.acf</shadedPattern>
+                            </relocation>
+                            <relocation>
+                                <pattern>co.aikar.locales</pattern>
+                                <shadedPattern>${AUTHOR}.locales</shadedPattern>
+                            </relocation>
+                        </relocations>
+                    </configuration>
                     <executions>
                         <execution>
                             <phase>package</phase>
@@ -265,9 +266,9 @@ if [ "$COMPILER" == "maven" ]; then
                     <artifactId>maven-resources-plugin</artifactId>
                     <version>3.3.1</version>
                     <configuration>
-                        <encoding>$\{project.build.sourceEncoding}</encoding>
+                        <encoding>\${project.build.sourceEncoding}</encoding>
                         <delimiters>
-                            <delimiter>$\{*}</delimiter>
+                            <delimiter>\${*}</delimiter>
                         </delimiters>
                         <useDefaultDelimiters>false</useDefaultDelimiters>
                         <nonFilteredFileExtensions>
@@ -283,14 +284,14 @@ if [ "$COMPILER" == "maven" ]; then
                             <path>
                                 <groupId>org.projectlombok</groupId>
                                 <artifactId>lombok</artifactId>
-                                <version>$\{lombok.version}</version>
+                                <version>\${lombok.version}</version>
                             </path>
                         </annotationProcessorPaths>
                     </configuration>
                 </plugin>
             </plugins>
         </build>
-    </project>" > pom.xml
+    </project>" > $PWD/pom.xml
 
 elif [ "$COMPILER" == "gradle" ]; then
     echo "${CYAN}Gradle Selected${RESET}"
