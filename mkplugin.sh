@@ -218,6 +218,12 @@ if [ "$COMPILER" == "maven" ]; then
         </dependencies>
 
         <build>
+            <resources>
+                <resource>
+                    <directory>src/main/resources</directory>
+                    <filtering>true</filtering>
+                </resource>
+            </resources>
             <plugins>
                 <!-- Compiler plugin para Java 21 -->
                 <plugin>
