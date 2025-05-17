@@ -110,8 +110,11 @@ ACF_VERSION="0.5.1"
 # LOMBOK_VERSION="1.18.36"
 # MINIMESSAGE_VERSION="4.18.0"
 JAVA_VERSION="21"
-#GRADLE_SHADOW_VERSION="9.0.0-beta8"
+# GRADLE_SHADOW_VERSION="9.0.0-beta8"
 PLUGIN_VERSION="1.0.0"
+MAVEN_COMPILE_VERSION="3.14.0"
+MAVEN_SHADOW_VERSION="3.6.0"
+MAVEN_RESOURCES_VERSION="3.3.1"
 
 AUTHOR="spectrasonic"
 
@@ -156,13 +159,21 @@ if [ "$COMPILER" == "maven" ]; then
         <packaging>jar</packaging>
 
         <properties>
+            <!-- Java Version -->
             <maven.compiler.source>${JAVA_VERSION}</maven.compiler.source>
             <maven.compiler.target>${JAVA_VERSION}</maven.compiler.target>
             <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+            <!-- Dependencies version -->
             <paper.version>${PAPERAPI_VERSION}-R0.1-SNAPSHOT</paper.version>
             <acf.version>${ACF_VERSION}-SNAPSHOT</acf.version>
             <lombok.version>${LOMBOK_VERSION}</lombok.version>
             <adventure.version>${MINIMESSAGE_VERSION}</adventure.version>
+
+            <!-- Plguins Version -->
+            <compiler.version>${MAVEN_COMPILE_VERSION}</compiler.version>
+            <shade.version>${MAVEN_SHADOW_VERSION}</shade.version>
+            <resources.version>${MAVEN_RESOURCES_VERSION}</resources.version>
         </properties>
 
         <repositories>
@@ -228,7 +239,7 @@ if [ "$COMPILER" == "maven" ]; then
                 <!-- Compiler plugin para Java 21 -->
                 <plugin>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.11.0</version>
+                    <version>\${compiler.version}</version>
                     <configuration>
                         <source>\${maven.compiler.source}</source>
                         <target>\${maven.compiler.target}</target>
@@ -241,7 +252,7 @@ if [ "$COMPILER" == "maven" ]; then
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-shade-plugin</artifactId>
-                    <version>3.6.0</version>
+                    <version>\${shade.version}</version>
                     <configuration>
                         <outputDirectory>\${project.basedir}/out</outputDirectory>
                         <finalName>\${project.artifactId}-\${project.version}</finalName>
@@ -271,7 +282,7 @@ if [ "$COMPILER" == "maven" ]; then
                 <!-- Procesamiento de resources para expandir variables en plugin.yml -->
                 <plugin>
                     <artifactId>maven-resources-plugin</artifactId>
-                    <version>3.3.1</version>
+                    <version>\${resources.version}</version>
                     <configuration>
                         <encoding>\${project.build.sourceEncoding}</encoding>
                         <delimiters>
