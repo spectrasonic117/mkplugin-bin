@@ -245,6 +245,13 @@ if [ "$COMPILER" == "maven" ]; then
                         <target>\${maven.compiler.target}</target>
                         <encoding>\${project.build.sourceEncoding}</encoding>
                         <release>21</release>
+                        <annotationProcessorPaths>
+                            <path>
+                                <groupId>org.projectlombok</groupId>
+                                <artifactId>lombok</artifactId>
+                                <version>\${lombok.version}</version>
+                            </path>
+                        </annotationProcessorPaths>
                     </configuration>
                 </plugin>
 
@@ -292,19 +299,6 @@ if [ "$COMPILER" == "maven" ]; then
                         <nonFilteredFileExtensions>
                             <nonFilteredFileExtension>jar</nonFilteredFileExtension>
                         </nonFilteredFileExtensions>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <configuration>
-                        <annotationProcessorPaths>
-                            <path>
-                                <groupId>org.projectlombok</groupId>
-                                <artifactId>lombok</artifactId>
-                                <version>\${lombok.version}</version>
-                            </path>
-                        </annotationProcessorPaths>
                     </configuration>
                 </plugin>
             </plugins>
