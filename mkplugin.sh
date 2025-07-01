@@ -312,7 +312,7 @@ elif [ "$COMPILER" == "gradle" ]; then
 
     # build.Gradle
     printf "plugins {
-        id(\"io.papermc.paperweight.userdev\") version \"2.0.0-beta.14\"
+        id(\"io.papermc.paperweight.userdev\") version \"2.0.0-beta.17\"
         id \"com.gradleup.shadow\" version \"${GRADLE_SHADOW_VERSION}\"
         id \"java\"
     }
