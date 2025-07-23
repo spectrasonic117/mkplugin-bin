@@ -103,10 +103,14 @@ LOMBOK_VERSION=$(echo "$lombok_content" | grep -oE 'pkg:maven/org\.projectlombok
 shadow_gradle_content=$(curl -s "https://central.sonatype.com/artifact/com.gradleup.shadow/shadow-gradle-plugin")
 GRADLE_SHADOW_VERSION=$(echo "$shadow_gradle_content" | grep -oE 'pkg:maven/com.gradleup.shadow/shadow-gradle-plugin@([0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9]+)?)' | sed 's/.*@//' | head -n 1)
 
+commandapi_content=$(curl -s "https://central.sonatype.com/artifact/dev.jorel/commandapi")
+COMANDAPI_VERSION=$(echo "$commandapi_content" | grep -oE 'pkg:maven/dev.jorel/commandapi@([0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9]+)?)' | sed 's/.*@//' | head -n 1)
+echo $COMANDAPI_VERSION
 
 PAPERAPI_VERSION="1.21.1"
 API_VERSION="1.21"
 ACF_VERSION="0.5.1"
+COMANDAPI_VERSION="10.1.2"
 # LOMBOK_VERSION="1.18.36"
 # MINIMESSAGE_VERSION="4.18.0"
 JAVA_VERSION="21"
@@ -166,7 +170,7 @@ if [ "$COMPILER" == "maven" ]; then
 
             <!-- Dependencies version -->
             <paper.version>${PAPERAPI_VERSION}-R0.1-SNAPSHOT</paper.version>
-            <acf.version>${ACF_VERSION}-SNAPSHOT</acf.version>
+            <commandapi.version>${COMANDAPI_VERSION}-SNAPSHOT</commandapi.version>
             <lombok.version>${LOMBOK_VERSION}</lombok.version>
             <adventure.version>${MINIMESSAGE_VERSION}</adventure.version>
 
@@ -200,11 +204,12 @@ if [ "$COMPILER" == "maven" ]; then
                 <scope>provided</scope>
             </dependency>
 
-            <!-- ACF Aikar -->
+            <!-- CommandAPI -->
             <dependency>
-                <groupId>co.aikar</groupId>
-                <artifactId>acf-paper</artifactId>
-                <version>\${acf.version}</version>
+                <groupId>dev.jorel</groupId>
+                <artifactId>commandapi-bukkit-core</artifactId>
+                <version>\${commandapi.version}</version>
+                <scope>provided</scope>
             </dependency>
 
             <!-- Lombok -->
@@ -264,16 +269,6 @@ if [ "$COMPILER" == "maven" ]; then
                         <outputDirectory>\${project.basedir}/out</outputDirectory>
                         <finalName>\${project.artifactId}-\${project.version}</finalName>
                         <dependencyReducedPomLocation>\${project.build.directory}/dependency-reduced-pom.xml</dependencyReducedPomLocation>
-                        <relocations>
-                            <relocation>
-                                <pattern>co.aikar.commands</pattern>
-                                <shadedPattern>${AUTHOR}.acf</shadedPattern>
-                            </relocation>
-                            <relocation>
-                                <pattern>co.aikar.locales</pattern>
-                                <shadedPattern>${AUTHOR}.locales</shadedPattern>
-                            </relocation>
-                        </relocations>
                         <shadedArtifactAttached>true</shadedArtifactAttached>
                     </configuration>
                     <executions>
