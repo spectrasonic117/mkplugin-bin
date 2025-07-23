@@ -170,7 +170,7 @@ if [ "$COMPILER" == "maven" ]; then
 
             <!-- Dependencies version -->
             <paper.version>${PAPERAPI_VERSION}-R0.1-SNAPSHOT</paper.version>
-            <commandapi.version>${COMANDAPI_VERSION}-SNAPSHOT</commandapi.version>
+            <commandapi.version>${COMANDAPI_VERSION}</commandapi.version>
             <lombok.version>${LOMBOK_VERSION}</lombok.version>
             <adventure.version>${MINIMESSAGE_VERSION}</adventure.version>
 
