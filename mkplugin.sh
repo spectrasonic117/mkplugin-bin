@@ -402,9 +402,8 @@ elif [ "$COMPILER" == "gradle" ]; then
 
 fi
 
-
 mkdir -p "$PWD/src/main/resources"
-mkdir -p "$PWD/src/main/java/com/${AUTHOR}/${PROJECT_NAME}"
+mkdir -p "$PWD/src/main/java/com/${AUTHOR}/${PROJECT_NAME}"/{managers,commands,events,listeners,enums}
 
 printf "name: ${PROJECT_NAME}
 version: '\${version}'
@@ -416,7 +415,6 @@ authors: [Spectrasonic]
 touch $PWD/src/main/resources/config.yml
 
 printf "package com.${AUTHOR}.${PROJECT_NAME};
-
 
 import com.${AUTHOR}.${PROJECT_NAME}.managers.CommandManager;
 import com.${AUTHOR}.${PROJECT_NAME}.managers.ConfigManager;
@@ -445,6 +443,7 @@ public final class Main extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        SaveDefaultConfig();
         CommandAPI.onEnable();
 
         this.configManager = new ConfigManager(this);
@@ -466,6 +465,80 @@ public final class Main extends JavaPlugin {
     }
 
 }" > ${PWD}/src/main/java/com/${AUTHOR}/${PROJECT_NAME}/Main.java
+
+
+# Maanagers - CommandManager
+printf "package com.${AUTHOR}.${PROJECT_NAME}.managers;
+
+import com.${AUTHOR}.${PROJECT_NAME}.Main;
+import lombok.Getter;
+
+@Getter
+public class CommandManager {
+
+    private final Main plugin;
+
+    public CommandManager(Main plugin) {
+        this.plugin = plugin;
+        registerCommands();
+    }
+
+    private void registerCommands() {
+        // Register commands here
+    }
+}" > $PWD/src/main/java/com/${AUTHOR}/${PROJECT_NAME}/managers/CommandManager.java
+
+# Maanagers - EventManager
+
+printf "package com.${AUTHOR}.${PROJECT_NAME}.managers;
+
+import com.${AUTHOR}.${PROJECT_NAME}.Main;
+import lombok.Getter;
+
+@Getter
+public class EventManager {
+
+    private final Main plugin;
+
+    public ConfigManager(Main plugin) {
+        this.plugin = plugin;
+        registerEvents();
+    }
+
+    private void registerEvents() {
+        // Register events here
+    }
+
+}" > $PWD/src/main/java/com/${AUTHOR}/${PROJECT_NAME}/managers/EventManager.java
+
+printf "package com.${AUTHOR}.${PROJECT_NAME}.managers;
+
+import lombok.Getter;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.plugin.java.JavaPlugin;
+
+@Getter
+public class ConfigManager {
+
+    private final JavaPlugin plugin;
+    private FileConfiguration config;
+
+    public ConfigManager(JavaPlugin plugin) {
+        this.plugin = plugin;
+        loadConfig();
+    }
+    
+    public void loadConfig() {
+        plugin.saveDefaultConfig();
+        plugin.reloadConfig();
+        this.config = plugin.getConfig();
+    }
+
+    public void saveConfig() {
+        plugin.saveConfig();
+    }
+}" > $PWD/src/main/java/com/${AUTHOR}/${PROJECT_NAME}/managers/ConfigManager.java
+
 
 if [ -d .git ]; then
     command rm -rf .git/
