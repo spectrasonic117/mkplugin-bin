@@ -417,18 +417,43 @@ touch $PWD/src/main/resources/config.yml
 
 printf "package com.${AUTHOR}.${PROJECT_NAME};
 
+
+import com.${AUTHOR}.${PROJECT_NAME}.managers.CommandManager;
+import com.${AUTHOR}.${PROJECT_NAME}.managers.ConfigManager;
+import com.${AUTHOR}.${PROJECT_NAME}.managers.EventManager;
+
+import dev.jorel.commandapi.CommandAPI;
+import dev.jorel.commandapi.CommandAPIBukkitConfig;
+import lombok.Getter;
+
 import com.${AUTHOR}.Utils.CommandUtils;
 import com.${AUTHOR}.Utils.MessageUtils;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
+@Getter
 public final class Main extends JavaPlugin {
+
+    private ConfigManager configManager;
+    private CommandManager commandManager;
+    private EventManager eventManager;
+
+    @Override
+    public void onLoad() {
+        CommandAPI.onLoad(new CommandAPIBukkitConfig(this));
+    }
 
     @Override
     public void onEnable() {
+        CommandAPI.onEnable();
 
-        registerCommands();
-        registerEvents();
+        this.configManager = new ConfigManager(this);
+        this.commandManager = new CommandManager(this);
+        this.eventManager = new EventManager(this);
+        
+        CommandUtils.setPlugin(this);
+        MessageUtils.sendStartupMessage(this);
+
         CommandUtils.setPlugin(this);
         MessageUtils.sendStartupMessage(this);
 
@@ -436,16 +461,10 @@ public final class Main extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        CommandAPI.onDisable();
         MessageUtils.sendShutdownMessage(this);
     }
 
-    public void registerCommands() {
-        // Set Commands Here
-    }
-
-    public void registerEvents() {
-        // Set Events Here
-    }
 }" > ${PWD}/src/main/java/com/${AUTHOR}/${PROJECT_NAME}/Main.java
 
 if [ -d .git ]; then
