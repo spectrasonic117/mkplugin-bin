@@ -212,6 +212,12 @@ if [ "$COMPILER" == "maven" ]; then
                 <scope>provided</scope>
             </dependency>
 
+            <dependency>
+                <groupId>dev.jorel</groupId>
+                <artifactId>commandapi-bukkit-shade</artifactId>
+                <version>\${commandapi.version}</version>
+            </dependency>
+
             <!-- Lombok -->
             <dependency>
                 <groupId>org.projectlombok</groupId>
@@ -270,6 +276,13 @@ if [ "$COMPILER" == "maven" ]; then
                         <finalName>\${project.artifactId}-\${project.version}</finalName>
                         <dependencyReducedPomLocation>\${project.build.directory}/dependency-reduced-pom.xml</dependencyReducedPomLocation>
                         <shadedArtifactAttached>true</shadedArtifactAttached>
+                        <minimizeJar>true</minimizeJar>
+                        <relocations>
+                            <relocation>
+                                <pattern>dev.jorel.commandapi</pattern>
+                                <shadedPattern>com.spectrasonic.commandapi</shadedPattern>
+                            </relocation>
+                        </relocations>
                     </configuration>
                     <executions>
                         <execution>
@@ -298,7 +311,7 @@ if [ "$COMPILER" == "maven" ]; then
                 </plugin>
             </plugins>
         </build>
-    </project>" > $PWD/pom.xml
+    </project>" > pom.xml
 
 elif [ "$COMPILER" == "gradle" ]; then
     echo "${CYAN}Gradle Selected${RESET}"
