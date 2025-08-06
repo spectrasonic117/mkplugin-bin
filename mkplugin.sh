@@ -500,7 +500,7 @@ public class EventManager {
 
     private final Main plugin;
 
-    public ConfigManager(Main plugin) {
+    public EventManager(Main plugin) {
         this.plugin = plugin;
         registerEvents();
     }
