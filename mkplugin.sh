@@ -443,16 +443,13 @@ public final class Main extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        SaveDefaultConfig();
+        saveDefaultConfig();
         CommandAPI.onEnable();
 
         this.configManager = new ConfigManager(this);
         this.commandManager = new CommandManager(this);
         this.eventManager = new EventManager(this);
         
-        CommandUtils.setPlugin(this);
-        MessageUtils.sendStartupMessage(this);
-
         CommandUtils.setPlugin(this);
         MessageUtils.sendStartupMessage(this);
 
@@ -537,6 +534,27 @@ public class ConfigManager {
     public void saveConfig() {
         plugin.saveConfig();
     }
+
+    /**
+     * Obtiene un mensaje de la configuración usando una clave
+     * @param key La clave del mensaje en la configuración
+     * @return El mensaje como String
+     */
+
+    public String getMessage(String key) {
+        return config.getString(key);
+    }
+
+    // /**
+    //  * Obtiene un valor de la configuración usando una clave con un valor por defecto
+    //  * @param key La clave del valor en la configuración
+    //  * @param def El valor por defecto si la clave no existe
+    //  * @return El valor como String
+    //  */
+    // public String getString(String key, String def) {
+    //     return config.getString(key, def);
+    // }
+    
 }" > $PWD/src/main/java/com/${AUTHOR}/${PROJECT_NAME}/managers/ConfigManager.java
 
 
