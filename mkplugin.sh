@@ -107,6 +107,8 @@ commandapi_content=$(curl -s "https://central.sonatype.com/artifact/dev.jorel/co
 COMANDAPI_VERSION=$(echo "$commandapi_content" | grep -oE 'pkg:maven/dev.jorel/commandapi@([0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9]+)?)' | sed 's/.*@//' | head -n 1)
 echo $COMANDAPI_VERSION
 
+PAPERWEIGHT_VERSION=$(curl -s https://plugins.gradle.org/plugin/io.papermc.paperweight.userdev | grep -o 'Version [0-9.]*-beta.[0-9]*' | head -n 1 | sed 's/Version //')
+
 PAPERAPI_VERSION="1.21.1"
 API_VERSION="1.21"
 ACF_VERSION="0.5.1"
@@ -148,6 +150,7 @@ else
     PROJECT_NAME="$1"
 fi
 
+# Maven Project Config
 if [ "$COMPILER" == "maven" ]; then
     echo "${RED}Maven Selected${RESET}"
     git clone git@github.com:spectrasonic117/mkplugin.git -q $PWD/$PROJECT_NAME --depth=1 --branch maven
@@ -313,14 +316,16 @@ if [ "$COMPILER" == "maven" ]; then
         </build>
     </project>" > pom.xml
 
+
+# Gradle Project Config
 elif [ "$COMPILER" == "gradle" ]; then
     echo "${CYAN}Gradle Selected${RESET}"
-    git clone git@github.com:spectrasonic117/mkplugin.git -q $PWD/$PROJECT_NAME --depth=1
+    git clone git@github.com:spectrasonic117/mkplugin.git -q $PWD/$PROJECT_NAME --depth=1 --branch gradle
     cd $PWD/$PROJECT_NAME
 
     # build.Gradle
     printf "plugins {
-        id(\"io.papermc.paperweight.userdev\") version \"2.0.0-beta.17\"
+        id(\"io.papermc.paperweight.userdev\") version \"${PAPERWEIGHT_VERSION}\"
         id \"com.gradleup.shadow\" version \"${GRADLE_SHADOW_VERSION}\"
         id \"java\"
     }
@@ -334,6 +339,7 @@ elif [ "$COMPILER" == "gradle" ]; then
         maven {
             name = \"papermc-repo\"
             url = \"https://repo.papermc.io/repository/maven-public/\"
+            
         }
         maven {
             name = \"sonatype\"
@@ -350,7 +356,7 @@ elif [ "$COMPILER" == "gradle" ]; then
         paperweight.paperDevBundle(\"${PAPERAPI_VERSION}-R0.1-SNAPSHOT\")
 
         // ACF Aikar
-        implementation \"co.aikar:acf-paper:${ACF_VERSION}-SNAPSHOT\"
+        compileOnly \"dev.jorel:commandapi-bukkit-core:${COMANDAPI_VERSION}\"
 
         // Lombok
         compileOnly \"org.projectlombok:lombok:${LOMBOK_VERSION}\"
@@ -362,8 +368,7 @@ elif [ "$COMPILER" == "gradle" ]; then
     }
 
     shadowJar {
-        relocate \"co.aikar.commands\", \"com.${AUTHOR}.${PROJECT_NAME}.acf\"
-        relocate \"co.aikar.locales\", \"com.${AUTHOR}.${PROJECT_NAME}.locales\"
+        relocate(\"dev.jorel.commandapi\", \"com.$AUTHOR.$PROJECT_NAME.commandapi\")
         destinationDirectory = file(\"\${rootDir}/out\")
         archiveFileName = \"\${rootProject.name}-\${version}.jar\" 
     }
