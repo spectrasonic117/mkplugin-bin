@@ -105,7 +105,6 @@ GRADLE_SHADOW_VERSION=$(echo "$shadow_gradle_content" | grep -oE 'pkg:maven/com.
 
 commandapi_content=$(curl -s "https://central.sonatype.com/artifact/dev.jorel/commandapi")
 COMANDAPI_VERSION=$(echo "$commandapi_content" | grep -oE 'pkg:maven/dev.jorel/commandapi@([0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9]+)?)' | sed 's/.*@//' | head -n 1)
-echo $COMANDAPI_VERSION
 
 PAPERWEIGHT_VERSION=$(curl -s https://plugins.gradle.org/plugin/io.papermc.paperweight.userdev | grep -o 'Version [0-9.]*-beta.[0-9]*' | head -n 1 | sed 's/Version //')
 
