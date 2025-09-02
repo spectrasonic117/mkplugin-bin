@@ -345,18 +345,19 @@ elif [ "$COMPILER" == "gradle" ]; then
             name = \"sonatype\"
             url = \"https://oss.sonatype.org/content/groups/public/\"
         }
-        maven {
-            name = \"aikar\"
-            url = \"https://repo.aikar.co/content/groups/aikar/\"
-        }
+        //maven {
+        //    name = \"aikar\"
+        //    url = \"https://repo.aikar.co/content/groups/aikar/\"
+        //}
     }
 
     dependencies {
         // compileOnly(\"io.papermc.paper:paper-api:${PAPERAPI_VERSION}-R0.1-SNAPSHOT\") // Paper
         paperweight.paperDevBundle(\"${PAPERAPI_VERSION}-R0.1-SNAPSHOT\")
 
-        // ACF Aikar
-        compileOnly \"dev.jorel:commandapi-bukkit-core:${COMANDAPI_VERSION}\"
+        // CommandAPI
+        // compileOnly \"dev.jorel:commandapi-bukkit-core:${COMANDAPI_VERSION}\" // for External Dependencies
+        implementation \"dev.jorel:commandapi-bukkit-shade-mojang-mapped:${COMANDAPI_VERSION}\"
 
         // Lombok
         compileOnly \"org.projectlombok:lombok:${LOMBOK_VERSION}\"
