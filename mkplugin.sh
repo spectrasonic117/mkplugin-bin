@@ -129,24 +129,53 @@ BASE_DIR="src/main"
 RESOURCES_DIR="${BASE_DIR}/resources"
 JAVA_DIR="${BASE_DIR}/java/com/${AUTHOR}/${PROJECT_NAME}"
 
-echo "${YELLOW}Select Compiler Project: ${RESET}"
-echo
-options=("maven" "gradle")
-select_option "${options[@]}"
-choice=$?
-COMPILER="${options[$choice]}"
-
-if [ -z "$1" ]; then
-    read -p "${BMAGENTA}${BLACK} Plugin Project:${RESET} " PROJECT_NAME
-elif [ -d "$1" ]; then
-    echo "${RED}El proyecto ya existe, ${WHITE}Usa otro nombre!"
-    exit 1
+# Parse arguments
+if [ $# -eq 0 ]; then
+    # No args, prompt for both
+    :
+elif [ $# -eq 1 ]; then
+    # Only project name, prompt for compiler
+    PROJECT_NAME="$1"
+elif [ $# -eq 2 ]; then
+    # Project name and compiler
+    PROJECT_NAME="$1"
+    case $2 in
+        gradle)
+            COMPILER="gradle"
+            COMPILER_SET=true
+            ;;
+        maven)
+            COMPILER="maven"
+            COMPILER_SET=true
+            ;;
+        *)
+            echo "${RED}Compilador desconocido: $2. Usa 'gradle' o 'maven'."
+            exit 1
+            ;;
+    esac
 elif [ "$1" == "--help" ] || [ "$1" == "-h" ]; then
     echo "${RED}Uso:"
-    echo "${GREEN}mkplugin ${BLUE}<project-name>"
+    echo "${GREEN}mkplugin ${BLUE}<project-name> ${YELLOW}[gradle|maven]"
     exit 1
 else
-    PROJECT_NAME="$1"
+    echo "${RED}Demasiados argumentos. Uso: mkplugin <project-name> [gradle|maven]"
+    exit 1
+fi
+
+if [ "$COMPILER_SET" = false ]; then
+    echo "${YELLOW}Select Compiler Project: ${RESET}"
+    echo
+    options=("maven" "gradle")
+    select_option "${options[@]}"
+    choice=$?
+    COMPILER="${options[$choice]}"
+fi
+
+if [ -z "$PROJECT_NAME" ]; then
+    read -p "${BMAGENTA}${BLACK} Plugin Project:${RESET} " PROJECT_NAME
+elif [ -d "$PROJECT_NAME" ]; then
+    echo "${RED}El proyecto ya existe, ${WHITE}Usa otro nombre!"
+    exit 1
 fi
 
 # Maven Project Config
