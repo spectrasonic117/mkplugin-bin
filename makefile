@@ -14,6 +14,8 @@ install:
 	cp ./$(BIN) $(BINDIR)/$(BIN)
 	cp ./$(BIN).sh $(DATDIR)/$(BIN).sh
 
+	cp -r ./templates $(DATDIR)
+
 	chmod +x $(BINDIR)/$(BIN)
 	chmod +x $(DATDIR)/$(BIN).sh
 

@@ -1,0 +1,5 @@
+name: ${PROJECT_NAME}
+version: '${version}'
+main: com.${AUTHOR}.${PROJECT_NAME}.Main
+api-version: '${API_VERSION}'
+authors: [Spectrasonic]

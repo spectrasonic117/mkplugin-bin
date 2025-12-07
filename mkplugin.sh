@@ -123,11 +123,13 @@ MAVEN_RESOURCES_VERSION="3.3.1"
 
 AUTHOR="spectrasonic"
 
+
 # === Directories ===
 
 BASE_DIR="src/main"
 RESOURCES_DIR="${BASE_DIR}/resources"
 JAVA_DIR="${BASE_DIR}/java/com/${AUTHOR}/${PROJECT_NAME}"
+TEMPLATES_DIR="/opt/mkplugin/templates"
 
 # Parse arguments
 if [ $# -eq 0 ]; then
@@ -181,415 +183,71 @@ fi
 # Maven Project Config
 if [ "$COMPILER" == "maven" ]; then
     echo "${RED}Maven Selected${RESET}"
-    git clone git@github.com:spectrasonic117/mkplugin.git -q $PWD/$PROJECT_NAME --depth=1 --branch maven
-    cd $PWD/$PROJECT_NAME
-    printf "<project xmlns=\"http://maven.apache.org/POM/4.0.0\"
-            xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"
-            xsi:schemaLocation=\"http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd\">
-        <modelVersion>4.0.0</modelVersion>
-
-        <groupId>com.${AUTHOR}</groupId>
-        <artifactId>${PROJECT_NAME}</artifactId>
-        <version>${PLUGIN_VERSION}</version>
-        <packaging>jar</packaging>
-
-        <properties>
-            <!-- Java Version -->
-            <maven.compiler.source>${JAVA_VERSION}</maven.compiler.source>
-            <maven.compiler.target>${JAVA_VERSION}</maven.compiler.target>
-            <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
-            <!-- Dependencies version -->
-            <paper.version>${PAPERAPI_VERSION}-R0.1-SNAPSHOT</paper.version>
-            <commandapi.version>${COMANDAPI_VERSION}</commandapi.version>
-            <lombok.version>${LOMBOK_VERSION}</lombok.version>
-            <adventure.version>${MINIMESSAGE_VERSION}</adventure.version>
-
-            <!-- Plguins Version -->
-            <compiler.version>${MAVEN_COMPILE_VERSION}</compiler.version>
-            <shade.version>${MAVEN_SHADOW_VERSION}</shade.version>
-            <resources.version>${MAVEN_RESOURCES_VERSION}</resources.version>
-        </properties>
-
-        <repositories>
-            <repository>
-                <id>papermc-repo</id>
-                <url>https://repo.papermc.io/repository/maven-public/</url>
-            </repository>
-            <repository>
-                <id>sonatype</id>
-                <url>https://oss.sonatype.org/content/groups/public/</url>
-            </repository>
-            <repository>
-                <id>aikar</id>
-                <url>https://repo.aikar.co/content/groups/aikar/</url>
-            </repository>
-        </repositories>
-
-        <dependencies>
-            <!-- Paper API -->
-            <dependency>
-                <groupId>io.papermc.paper</groupId>
-                <artifactId>paper-api</artifactId>
-                <version>\${paper.version}</version>
-                <scope>provided</scope>
-            </dependency>
-
-            <!-- CommandAPI -->
-            <dependency>
-                <groupId>dev.jorel</groupId>
-                <artifactId>commandapi-bukkit-core</artifactId>
-                <version>\${commandapi.version}</version>
-                <scope>provided</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>dev.jorel</groupId>
-                <artifactId>commandapi-bukkit-shade</artifactId>
-                <version>\${commandapi.version}</version>
-            </dependency>
-
-            <!-- Lombok -->
-            <dependency>
-                <groupId>org.projectlombok</groupId>
-                <artifactId>lombok</artifactId>
-                <version>\${lombok.version}</version>
-                <scope>provided</scope>
-            </dependency>
-
-            <!-- Adventure Minimessage -->
-            <dependency>
-                <groupId>net.kyori</groupId>
-                <artifactId>adventure-text-minimessage</artifactId>
-                <version>\${adventure.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>net.kyori</groupId>
-                <artifactId>adventure-api</artifactId>
-                <version>\${adventure.version}</version>
-            </dependency>
-        </dependencies>
-
-        <build>
-            <resources>
-                <resource>
-                    <directory>src/main/resources</directory>
-                    <filtering>true</filtering>
-                </resource>
-            </resources>
-            <plugins>
-                <!-- Compiler plugin para Java 21 -->
-                <plugin>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <version>\${compiler.version}</version>
-                    <configuration>
-                        <source>\${maven.compiler.source}</source>
-                        <target>\${maven.compiler.target}</target>
-                        <encoding>\${project.build.sourceEncoding}</encoding>
-                        <release>21</release>
-                        <annotationProcessorPaths>
-                            <path>
-                                <groupId>org.projectlombok</groupId>
-                                <artifactId>lombok</artifactId>
-                                <version>\${lombok.version}</version>
-                            </path>
-                        </annotationProcessorPaths>
-                    </configuration>
-                </plugin>
-
-                <!-- Shade plugin para crear el JAR y hacer relocaciones -->
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-shade-plugin</artifactId>
-                    <version>\${shade.version}</version>
-                    <configuration>
-                        <outputDirectory>\${project.basedir}/out</outputDirectory>
-                        <finalName>\${project.artifactId}-\${project.version}</finalName>
-                        <dependencyReducedPomLocation>\${project.build.directory}/dependency-reduced-pom.xml</dependencyReducedPomLocation>
-                        <shadedArtifactAttached>true</shadedArtifactAttached>
-                        <minimizeJar>true</minimizeJar>
-                        <relocations>
-                            <relocation>
-                                <pattern>dev.jorel.commandapi</pattern>
-                                <shadedPattern>com.spectrasonic.commandapi</shadedPattern>
-                            </relocation>
-                        </relocations>
-                    </configuration>
-                    <executions>
-                        <execution>
-                            <phase>package</phase>
-                            <goals>
-                                <goal>shade</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                </plugin>
-
-                <!-- Procesamiento de resources para expandir variables en plugin.yml -->
-                <plugin>
-                    <artifactId>maven-resources-plugin</artifactId>
-                    <version>\${resources.version}</version>
-                    <configuration>
-                        <encoding>\${project.build.sourceEncoding}</encoding>
-                        <delimiters>
-                            <delimiter>\${*}</delimiter>
-                        </delimiters>
-                        <useDefaultDelimiters>false</useDefaultDelimiters>
-                        <nonFilteredFileExtensions>
-                            <nonFilteredFileExtension>jar</nonFilteredFileExtension>
-                        </nonFilteredFileExtensions>
-                    </configuration>
-                </plugin>
-            </plugins>
-        </build>
-    </project>" > pom.xml
+    git clone git@github.com:spectrasonic117/mkplugin.git -q "$PWD/$PROJECT_NAME" --depth=1 --branch maven
+    cd "$PWD/$PROJECT_NAME"
+    cp "$TEMPLATES_DIR/pom-template.xml" pom.xml
+    sed -i '' "s|\${AUTHOR}|$AUTHOR|g" pom.xml
+    sed -i '' "s|\${PROJECT_NAME}|$PROJECT_NAME|g" pom.xml
+    sed -i '' "s|\${PLUGIN_VERSION}|$PLUGIN_VERSION|g" pom.xml
+    sed -i '' "s|\${JAVA_VERSION}|$JAVA_VERSION|g" pom.xml
+    sed -i '' "s|\${PAPERAPI_VERSION}|$PAPERAPI_VERSION|g" pom.xml
+    sed -i '' "s|\${COMANDAPI_VERSION}|$COMANDAPI_VERSION|g" pom.xml
+    sed -i '' "s|\${LOMBOK_VERSION}|$LOMBOK_VERSION|g" pom.xml
+    sed -i '' "s|\${MINIMESSAGE_VERSION}|$MINIMESSAGE_VERSION|g" pom.xml
+    sed -i '' "s|\${MAVEN_COMPILE_VERSION}|$MAVEN_COMPILE_VERSION|g" pom.xml
+    sed -i '' "s|\${MAVEN_SHADOW_VERSION}|$MAVEN_SHADOW_VERSION|g" pom.xml
+    sed -i '' "s|\${MAVEN_RESOURCES_VERSION}|$MAVEN_RESOURCES_VERSION|g" pom.xml
 
 
 # Gradle Project Config
 elif [ "$COMPILER" == "gradle" ]; then
     echo "${CYAN}Gradle Selected${RESET}"
-    git clone git@github.com:spectrasonic117/mkplugin.git -q $PWD/$PROJECT_NAME --depth=1 --branch gradle
-    cd $PWD/$PROJECT_NAME
+    git clone git@github.com:spectrasonic117/mkplugin.git -q "$PWD/$PROJECT_NAME" --depth=1 --branch gradle
+    cd "$PWD/$PROJECT_NAME"
 
-    # build.Gradle
-    printf "plugins {
-        id(\"io.papermc.paperweight.userdev\") version \"${PAPERWEIGHT_VERSION}\"
-        id \"com.gradleup.shadow\" version \"${GRADLE_SHADOW_VERSION}\"
-        id \"java\"
-    }
+    cp "$TEMPLATES_DIR/build-template.gradle" build.gradle
+    sed -i '' "s|\${AUTHOR}|$AUTHOR|g" build.gradle
+    sed -i '' "s|\${PROJECT_NAME}|$PROJECT_NAME|g" build.gradle
+    sed -i '' "s|\${PLUGIN_VERSION}|$PLUGIN_VERSION|g" build.gradle
+    sed -i '' "s|\${PAPERWEIGHT_VERSION}|$PAPERWEIGHT_VERSION|g" build.gradle
+    sed -i '' "s|\${GRADLE_SHADOW_VERSION}|$GRADLE_SHADOW_VERSION|g" build.gradle
+    sed -i '' "s|\${PAPERAPI_VERSION}|$PAPERAPI_VERSION|g" build.gradle
+    sed -i '' "s|\${COMANDAPI_VERSION}|$COMANDAPI_VERSION|g" build.gradle
+    sed -i '' "s|\${LOMBOK_VERSION}|$LOMBOK_VERSION|g" build.gradle
+    sed -i '' "s|\${MINIMESSAGE_VERSION}|$MINIMESSAGE_VERSION|g" build.gradle
+    sed -i '' "s|\${JAVA_VERSION}|$JAVA_VERSION|g" build.gradle
 
-    group = \"com.${AUTHOR}\"
-    version = \"${PLUGIN_VERSION}\"
-
-    repositories {
-        gradlePluginPortal()
-        mavenCentral()
-        maven {
-            name = \"papermc-repo\"
-            url = \"https://repo.papermc.io/repository/maven-public/\"
-            
-        }
-        maven {
-            name = \"sonatype\"
-            url = \"https://oss.sonatype.org/content/groups/public/\"
-        }
-        //maven {
-        //    name = \"aikar\"
-        //    url = \"https://repo.aikar.co/content/groups/aikar/\"
-        //}
-    }
-
-    dependencies {
-        // compileOnly(\"io.papermc.paper:paper-api:${PAPERAPI_VERSION}-R0.1-SNAPSHOT\") // Paper
-        paperweight.paperDevBundle(\"${PAPERAPI_VERSION}-R0.1-SNAPSHOT\")
-
-        // CommandAPI
-        // compileOnly \"dev.jorel:commandapi-bukkit-core:${COMANDAPI_VERSION}\" // for External Dependencies
-        implementation \"dev.jorel:commandapi-bukkit-shade-mojang-mapped:${COMANDAPI_VERSION}\"
-
-        // Lombok
-        compileOnly \"org.projectlombok:lombok:${LOMBOK_VERSION}\"
-        annotationProcessor \"org.projectlombok:lombok:${LOMBOK_VERSION}\"
-
-        // Minimessage - Adventure
-        implementation \"net.kyori:adventure-text-minimessage:${MINIMESSAGE_VERSION}\"
-        implementation \"net.kyori:adventure-api:${MINIMESSAGE_VERSION}\"
-    }
-
-    shadowJar {
-        relocate(\"dev.jorel.commandapi\", \"com.$AUTHOR.$PROJECT_NAME.commandapi\")
-        destinationDirectory = file(\"\${rootDir}/out\")
-        archiveFileName = \"\${rootProject.name}-\${version}.jar\" 
-    }
-
-    build.dependsOn shadowJar
-    build.finalizedBy reobfJar
-
-    def targetJavaVersion = \"${JAVA_VERSION}\"
-    java {
-        def javaVersion = JavaVersion.toVersion(targetJavaVersion)
-        sourceCompatibility = javaVersion
-        targetCompatibility = javaVersion
-        if (JavaVersion.current() < javaVersion) {
-            toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
-        }
-    }
-
-    //  tasks.withType(JavaCompile).configureEach {
-    //      options.encoding = \"UTF-8\"
-    //
-    //      if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible()) {
-    //          options.release.set(targetJavaVersion)
-    //      }
-    //  }
-
-    processResources {
-        def props = [version: version]
-        inputs.properties props
-        filteringCharset = \"UTF-8\"
-        filesMatching(\"plugin.yml\") {
-            expand props
-        }
-    }" > build.gradle
-
-    printf "rootProject.name = '${PROJECT_NAME}'" > settings.gradle
+    # Settings.gradle
+    cp "$TEMPLATES_DIR/settings-template.gradle" settings.gradle
+    sed -i '' "s|\${PROJECT_NAME}|$PROJECT_NAME|g" settings.gradle
 
 fi
 
 mkdir -p "$PWD/src/main/resources"
 mkdir -p "$PWD/src/main/java/com/${AUTHOR}/${PROJECT_NAME}"/{managers,commands,events,listeners,enums}
 
-printf "name: ${PROJECT_NAME}
-version: '\${version}'
-main: com.${AUTHOR}.${PROJECT_NAME}.Main
-api-version: '${API_VERSION}'
-authors: [Spectrasonic]
-" > $PWD/src/main/resources/plugin.yml
+cp "$TEMPLATES_DIR/plugin-template.yml" "$PWD/src/main/resources/plugin.yml"
+sed -i '' "s|\${PROJECT_NAME}|$PROJECT_NAME|g" "$PWD/src/main/resources/plugin.yml"
+sed -i '' "s|\${AUTHOR}|$AUTHOR|g" "$PWD/src/main/resources/plugin.yml"
+sed -i '' "s|\${API_VERSION}|$API_VERSION|g" "$PWD/src/main/resources/plugin.yml"
 
-touch $PWD/src/main/resources/config.yml
+touch "$PWD/src/main/resources/config.yml"
 
-printf "package com.${AUTHOR}.${PROJECT_NAME};
+cp "$TEMPLATES_DIR/Main-template.java" "${PWD}/src/main/java/com/${AUTHOR}/${PROJECT_NAME}/Main.java"
+sed -i '' "s|\${AUTHOR}|$AUTHOR|g" "${PWD}/src/main/java/com/${AUTHOR}/${PROJECT_NAME}/Main.java"
+sed -i '' "s|\${PROJECT_NAME}|$PROJECT_NAME|g" "${PWD}/src/main/java/com/${AUTHOR}/${PROJECT_NAME}/Main.java"
 
-import com.${AUTHOR}.${PROJECT_NAME}.managers.CommandManager;
-import com.${AUTHOR}.${PROJECT_NAME}.managers.ConfigManager;
-import com.${AUTHOR}.${PROJECT_NAME}.managers.EventManager;
+cp "$TEMPLATES_DIR/CommandManager-template.java" "$PWD/src/main/java/com/${AUTHOR}/${PROJECT_NAME}/managers/CommandManager.java"
+sed -i '' "s|\${AUTHOR}|$AUTHOR|g" "$PWD/src/main/java/com/${AUTHOR}/${PROJECT_NAME}/managers/CommandManager.java"
+sed -i '' "s|\${PROJECT_NAME}|$PROJECT_NAME|g" "$PWD/src/main/java/com/${AUTHOR}/${PROJECT_NAME}/managers/CommandManager.java"
 
-import dev.jorel.commandapi.CommandAPI;
-import dev.jorel.commandapi.CommandAPIBukkitConfig;
-import lombok.Getter;
+cp "$TEMPLATES_DIR/EventManager-template.java" "$PWD/src/main/java/com/${AUTHOR}/${PROJECT_NAME}/managers/EventManager.java"
+sed -i '' "s|\${AUTHOR}|$AUTHOR|g" "$PWD/src/main/java/com/${AUTHOR}/${PROJECT_NAME}/managers/EventManager.java"
+sed -i '' "s|\${PROJECT_NAME}|$PROJECT_NAME|g" "$PWD/src/main/java/com/${AUTHOR}/${PROJECT_NAME}/managers/EventManager.java"
 
-import com.${AUTHOR}.Utils.CommandUtils;
-import com.${AUTHOR}.Utils.MessageUtils;
-
-import org.bukkit.plugin.java.JavaPlugin;
-
-@Getter
-public final class Main extends JavaPlugin {
-
-    private ConfigManager configManager;
-    private CommandManager commandManager;
-    private EventManager eventManager;
-
-    @Override
-    public void onLoad() {
-        CommandAPI.onLoad(new CommandAPIBukkitConfig(this));
-    }
-
-    @Override
-    public void onEnable() {
-        saveDefaultConfig();
-        CommandAPI.onEnable();
-
-        this.configManager = new ConfigManager(this);
-        this.commandManager = new CommandManager(this);
-        this.eventManager = new EventManager(this);
-        
-        CommandUtils.setPlugin(this);
-        MessageUtils.sendStartupMessage(this);
-
-    }
-
-    @Override
-    public void onDisable() {
-        CommandAPI.onDisable();
-        MessageUtils.sendShutdownMessage(this);
-    }
-
-}" > ${PWD}/src/main/java/com/${AUTHOR}/${PROJECT_NAME}/Main.java
-
-
-# Maanagers - CommandManager
-printf "package com.${AUTHOR}.${PROJECT_NAME}.managers;
-
-import com.${AUTHOR}.${PROJECT_NAME}.Main;
-import lombok.Getter;
-
-@Getter
-public class CommandManager {
-
-    private final Main plugin;
-
-    public CommandManager(Main plugin) {
-        this.plugin = plugin;
-        registerCommands();
-    }
-
-    private void registerCommands() {
-        // Register commands here
-    }
-}" > $PWD/src/main/java/com/${AUTHOR}/${PROJECT_NAME}/managers/CommandManager.java
-
-# Maanagers - EventManager
-
-printf "package com.${AUTHOR}.${PROJECT_NAME}.managers;
-
-import com.${AUTHOR}.${PROJECT_NAME}.Main;
-import lombok.Getter;
-
-@Getter
-public class EventManager {
-
-    private final Main plugin;
-
-    public EventManager(Main plugin) {
-        this.plugin = plugin;
-        registerEvents();
-    }
-
-    private void registerEvents() {
-        // Register events here
-    }
-
-}" > $PWD/src/main/java/com/${AUTHOR}/${PROJECT_NAME}/managers/EventManager.java
-
-printf "package com.${AUTHOR}.${PROJECT_NAME}.managers;
-
-import lombok.Getter;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.plugin.java.JavaPlugin;
-
-@Getter
-public class ConfigManager {
-
-    private final JavaPlugin plugin;
-    private FileConfiguration config;
-
-    public ConfigManager(JavaPlugin plugin) {
-        this.plugin = plugin;
-        loadConfig();
-    }
-    
-    public void loadConfig() {
-        plugin.saveDefaultConfig();
-        plugin.reloadConfig();
-        this.config = plugin.getConfig();
-    }
-
-    public void saveConfig() {
-        plugin.saveConfig();
-    }
-
-    /**
-     * Obtiene un mensaje de la configuración usando una clave
-     * @param key La clave del mensaje en la configuración
-     * @return El mensaje como String
-     */
-
-    public String getMessage(String key) {
-        return config.getString(key);
-    }
-
-    // /**
-    //  * Obtiene un valor de la configuración usando una clave con un valor por defecto
-    //  * @param key La clave del valor en la configuración
-    //  * @param def El valor por defecto si la clave no existe
-    //  * @return El valor como String
-    //  */
-    // public String getString(String key, String def) {
-    //     return config.getString(key, def);
-    // }
-    
-}" > $PWD/src/main/java/com/${AUTHOR}/${PROJECT_NAME}/managers/ConfigManager.java
+cp "$TEMPLATES_DIR/ConfigManager-template.java" "$PWD/src/main/java/com/${AUTHOR}/${PROJECT_NAME}/managers/ConfigManager.java"
+sed -i '' "s|\${AUTHOR}|$AUTHOR|g" "$PWD/src/main/java/com/${AUTHOR}/${PROJECT_NAME}/managers/ConfigManager.java"
+sed -i '' "s|\${PROJECT_NAME}|$PROJECT_NAME|g" "$PWD/src/main/java/com/${AUTHOR}/${PROJECT_NAME}/managers/ConfigManager.java"
 
 
 if [ -d .git ]; then
