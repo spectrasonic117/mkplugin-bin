@@ -205,17 +205,40 @@ elif [ "$COMPILER" == "gradle" ]; then
     git clone git@github.com:spectrasonic117/mkplugin.git -q "$PWD/$PROJECT_NAME" --depth=1 --branch gradle
     cd "$PWD/$PROJECT_NAME"
 
+    # gradle.properties
+    printf "org.gradle.caching=true
+org.gradle.parallel=true
+org.gradle.configuration-cache=true
+org.gradle.daemon=true
+
+# Vars
+
+version=1.0.0
+group=com.spectrasonic
+projectName=$PROJECT_NAME
+javaVersion=21
+
+# Var Plugins
+gradlePaperweight=$PAPERWEIGHT_VERSION
+gradleShadow=$GRADLE_SHADOW_VERSION
+
+# Dependencies Vars
+minecraftVersion=$PAPERAPI_VERSION
+CommandAPI=$COMANDAPI_VERSION
+Lombok=$LOMBOK_VERSION
+Minimessage=$MINIMESSAGE_VERSION" > gradle.properties
+
     cp "$TEMPLATES_DIR/build-template.gradle" build.gradle
-    sed -i '' "s|\${AUTHOR}|$AUTHOR|g" build.gradle
-    sed -i '' "s|\${PROJECT_NAME}|$PROJECT_NAME|g" build.gradle
-    sed -i '' "s|\${PLUGIN_VERSION}|$PLUGIN_VERSION|g" build.gradle
-    sed -i '' "s|\${PAPERWEIGHT_VERSION}|$PAPERWEIGHT_VERSION|g" build.gradle
-    sed -i '' "s|\${GRADLE_SHADOW_VERSION}|$GRADLE_SHADOW_VERSION|g" build.gradle
-    sed -i '' "s|\${PAPERAPI_VERSION}|$PAPERAPI_VERSION|g" build.gradle
-    sed -i '' "s|\${COMANDAPI_VERSION}|$COMANDAPI_VERSION|g" build.gradle
-    sed -i '' "s|\${LOMBOK_VERSION}|$LOMBOK_VERSION|g" build.gradle
-    sed -i '' "s|\${MINIMESSAGE_VERSION}|$MINIMESSAGE_VERSION|g" build.gradle
-    sed -i '' "s|\${JAVA_VERSION}|$JAVA_VERSION|g" build.gradle
+    # sed -i '' "s|\${AUTHOR}|$AUTHOR|g" build.gradle
+    # sed -i '' "s|\${PROJECT_NAME}|$PROJECT_NAME|g" build.gradle
+    # sed -i '' "s|\${PLUGIN_VERSION}|$PLUGIN_VERSION|g" build.gradle
+    # sed -i '' "s|\${PAPERWEIGHT_VERSION}|$PAPERWEIGHT_VERSION|g" build.gradle
+    # sed -i '' "s|\${GRADLE_SHADOW_VERSION}|$GRADLE_SHADOW_VERSION|g" build.gradle
+    # sed -i '' "s|\${PAPERAPI_VERSION}|$PAPERAPI_VERSION|g" build.gradle
+    # sed -i '' "s|\${COMANDAPI_VERSION}|$COMANDAPI_VERSION|g" build.gradle
+    # sed -i '' "s|\${LOMBOK_VERSION}|$LOMBOK_VERSION|g" build.gradle
+    # sed -i '' "s|\${MINIMESSAGE_VERSION}|$MINIMESSAGE_VERSION|g" build.gradle
+    # sed -i '' "s|\${JAVA_VERSION}|$JAVA_VERSION|g" build.gradle
 
     # Settings.gradle
     cp "$TEMPLATES_DIR/settings-template.gradle" settings.gradle

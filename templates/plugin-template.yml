@@ -1,4 +1,5 @@
 name: ${PROJECT_NAME}
+api: "${API_VERSION}"
 version: '${version}'
 main: com.${AUTHOR}.${PROJECT_NAME}.Main
 api-version: '${API_VERSION}'

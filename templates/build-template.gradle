@@ -1,57 +1,51 @@
 plugins {
-    id("io.papermc.paperweight.userdev") version "${PAPERWEIGHT_VERSION}"
-    id "com.gradleup.shadow" version "${GRADLE_SHADOW_VERSION}"
+    id("io.papermc.paperweight.userdev") version "${gradlePaperweight}"
+    id "com.gradleup.shadow" version "${gradleShadow}"
     id "java"
 }
 
-group = "com.${AUTHOR}"
-version = "${PLUGIN_VERSION}"
-
 repositories {
-    gradlePluginPortal()
+    gradlePluginPortal() 
     mavenCentral()
     maven {
         name = "papermc-repo"
         url = "https://repo.papermc.io/repository/maven-public/"
 
     }
-    maven {
+    maven { 
         name = "sonatype"
         url = "https://oss.sonatype.org/content/groups/public/"
     }
-    //maven {
-    //    name = "aikar"
-    //    url = "https://repo.aikar.co/content/groups/aikar/"
-    //}
 }
 
 dependencies {
-    // compileOnly("io.papermc.paper:paper-api:${PAPERAPI_VERSION}-R0.1-SNAPSHOT") // Paper
-    paperweight.paperDevBundle("${PAPERAPI_VERSION}-R0.1-SNAPSHOT")
+    // compileOnly("io.papermc.paper:paper-api:1.21.1-R0.1-SNAPSHOT") // Paper
+    paperweight.paperDevBundle("${minecraftVersion}-R0.1-SNAPSHOT")
 
     // CommandAPI
-    // compileOnly "dev.jorel:commandapi-bukkit-core:${COMANDAPI_VERSION}" // for External Dependencies
-    implementation "dev.jorel:commandapi-bukkit-shade-mojang-mapped:${COMANDAPI_VERSION}"
+    // compileOnly "dev.jorel:commandapi-bukkit-core:10.1.2" // for External Dependencies
+    implementation "dev.jorel:commandapi-bukkit-shade-mojang-mapped:${CommandAPI}"
 
     // Lombok
-    compileOnly "org.projectlombok:lombok:${LOMBOK_VERSION}"
-    annotationProcessor "org.projectlombok:lombok:${LOMBOK_VERSION}"
+    compileOnly "org.projectlombok:lombok:${Lombok}"
+    annotationProcessor "org.projectlombok:lombok:${Lombok}"
 
     // Minimessage - Adventure
-    implementation "net.kyori:adventure-text-minimessage:${MINIMESSAGE_VERSION}"
-    implementation "net.kyori:adventure-api:${MINIMESSAGE_VERSION}"
+    implementation "net.kyori:adventure-text-minimessage:${Minimessage}"
+    implementation "net.kyori:adventure-api:${Minimessage}"
+
 }
 
 shadowJar {
-    relocate("dev.jorel.commandapi", "com.$AUTHOR.$PROJECT_NAME.commandapi")
-    destinationDirectory = file("\${rootDir}/out")
-    archiveFileName = "\${rootProject.name}-\${version}.jar"
+    relocate("dev.jorel.commandapi", "${group}.commandapi")
+    destinationDirectory = file("${rootDir}/out")
+    archiveFileName = "${rootProject.name}-${version}.jar"
 }
 
 build.dependsOn shadowJar
 build.finalizedBy reobfJar
 
-def targetJavaVersion = "${JAVA_VERSION}"
+def targetJavaVersion = "${javaVersion}"
 java {
     def javaVersion = JavaVersion.toVersion(targetJavaVersion)
     sourceCompatibility = javaVersion
@@ -60,14 +54,6 @@ java {
         toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
     }
 }
-
-//  tasks.withType(JavaCompile).configureEach {
-//      options.encoding = "UTF-8"
-//
-//      if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible()) {
-//          options.release.set(targetJavaVersion)
-//      }
-//  }
 
 processResources {
     def props = [version: version]
