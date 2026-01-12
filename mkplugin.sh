@@ -252,6 +252,10 @@ Minimessage=$MINIMESSAGE_VERSION" > gradle.properties
 
 fi
 
+# Download Paper Agent
+command curl https://gitlab.com/Spectrasonic/agents/-/raw/master/minecraft/plugin-agent.md -o ${PWD}/AGENTS.md
+
+# Save Files
 mkdir -p "$PWD/src/main/resources"
 mkdir -p "$PWD/src/main/java/com/${AUTHOR}/${PROJECT_NAME}"/{managers,commands,events,listeners,enums}
 
