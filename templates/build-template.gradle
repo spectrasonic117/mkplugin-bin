@@ -1,6 +1,6 @@
 plugins {
-    id("io.papermc.paperweight.userdev") version "${gradlePaperweight}"
-    id "com.gradleup.shadow" version "${gradleShadow}"
+    // id("io.papermc.paperweight.userdev") version "${gradlePaperweight}"
+    // id "com.gradleup.shadow" version "${gradleShadow}"
     id "java"
 }
 
@@ -19,12 +19,12 @@ repositories {
 }
 
 dependencies {
-    // compileOnly("io.papermc.paper:paper-api:1.21.1-R0.1-SNAPSHOT") // Paper
-    paperweight.paperDevBundle("${minecraftVersion}-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:${minecraftVersion}-R0.1-SNAPSHOT") // Paper
+    // paperweight.paperDevBundle("${minecraftVersion}-R0.1-SNAPSHOT")
 
     // CommandAPI
-    // compileOnly "dev.jorel:commandapi-bukkit-core:10.1.2" // for External Dependencies
-    implementation "dev.jorel:commandapi-bukkit-shade-mojang-mapped:${CommandAPI}"
+    compileOnly "dev.jorel:commandapi-paper-core:${CommandAPI}" // for External Dependencies
+    // implementation "dev.jorel:commandapi-paper-shade-mojang-mapped:${CommandAPI}"
 
     // Lombok
     compileOnly "org.projectlombok:lombok:${Lombok}"
@@ -36,14 +36,19 @@ dependencies {
 
 }
 
-shadowJar {
-    relocate("dev.jorel.commandapi", "${group}.commandapi")
+// shadowJar {
+//     relocate("dev.jorel.commandapi", "${group}.commandapi")
+//     destinationDirectory = file("${rootDir}/out")
+//     archiveFileName = "${rootProject.name}-${version}.jar"
+// }
+
+jar {
     destinationDirectory = file("${rootDir}/out")
     archiveFileName = "${rootProject.name}-${version}.jar"
 }
 
-build.dependsOn shadowJar
-build.finalizedBy reobfJar
+// build.dependsOn shadowJar
+// build.finalizedBy reobfJar
 
 def targetJavaVersion = "${javaVersion}"
 java {

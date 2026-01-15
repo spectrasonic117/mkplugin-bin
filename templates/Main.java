@@ -4,8 +4,8 @@ import com.${AUTHOR}.${PROJECT_NAME}.managers.CommandManager;
 import com.${AUTHOR}.${PROJECT_NAME}.managers.ConfigManager;
 import com.${AUTHOR}.${PROJECT_NAME}.managers.EventManager;
 
-import dev.jorel.commandapi.CommandAPI;
-import dev.jorel.commandapi.CommandAPIBukkitConfig;
+// import dev.jorel.commandapi.CommandAPI;
+// import dev.jorel.commandapi.CommandAPIBukkitConfig;
 import lombok.Getter;
 
 import com.${AUTHOR}.Utils.CommandUtils;
@@ -20,15 +20,15 @@ public final class Main extends JavaPlugin {
     private CommandManager commandManager;
     private EventManager eventManager;
 
-    @Override
-    public void onLoad() {
-        CommandAPI.onLoad(new CommandAPIBukkitConfig(this));
-    }
+    // @Override
+    // public void onLoad() {
+    //     CommandAPI.onLoad(new CommandAPIBukkitConfig(this));
+    // }
 
     @Override
     public void onEnable() {
         saveDefaultConfig();
-        CommandAPI.onEnable();
+        // CommandAPI.onEnable();
 
         this.configManager = new ConfigManager(this);
         this.commandManager = new CommandManager(this);
@@ -41,7 +41,7 @@ public final class Main extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        CommandAPI.onDisable();
+        // CommandAPI.onDisable();
         MessageUtils.sendShutdownMessage(this);
     }
 

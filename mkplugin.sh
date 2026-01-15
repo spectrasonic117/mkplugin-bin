@@ -1,17 +1,5 @@
 #!/usr/bin/env sh
-printf "
 
-███╗   ███╗██╗  ██╗██████╗ ██╗     ██╗   ██╗ ██████╗ ██╗███╗   ██╗
-████╗ ████║██║ ██╔╝██╔══██╗██║     ██║   ██║██╔════╝ ██║████╗  ██║
-██╔████╔██║█████╔╝ ██████╔╝██║     ██║   ██║██║  ███╗██║██╔██╗ ██║
-██║╚██╔╝██║██╔═██╗ ██╔═══╝ ██║     ██║   ██║██║   ██║██║██║╚██╗██║
-██║ ╚═╝ ██║██║  ██╗██║     ███████╗╚██████╔╝╚██████╔╝██║██║ ╚████║
-╚═╝     ╚═╝╚═╝  ╚═╝╚═╝     ╚══════╝ ╚═════╝  ╚═════╝ ╚═╝╚═╝  ╚═══╝
-
-Developed by Spectrasonic
-v1.1.2
-
-"
 # === Colors ===
 BLACK="$(tput setaf 0)"
 RED="$(tput setaf 1)"
@@ -94,6 +82,21 @@ function select_option {
     return $selected
 }
 
+
+printf "
+
+$BLUE ███╗   ███╗██╗  ██╗██████╗ ██╗     ██╗   ██╗ ██████╗ ██╗███╗   ██╗
+$BLUE ████╗ ████║██║ ██╔╝██╔══██╗██║     ██║   ██║██╔════╝ ██║████╗  ██║
+$BLUE ██╔████╔██║█████╔╝ ██████╔╝██║     ██║   ██║██║  ███╗██║██╔██╗ ██║
+$BLUE ██║╚██╔╝██║██╔═██╗ ██╔═══╝ ██║     ██║   ██║██║   ██║██║██║╚██╗██║
+$BLUE ██║ ╚═╝ ██║██║  ██╗██║     ███████╗╚██████╔╝╚██████╔╝██║██║ ╚████║
+$BLUE ╚═╝     ╚═╝╚═╝  ╚═╝╚═╝     ╚══════╝ ╚═════╝  ╚═════╝ ╚═╝╚═╝  ╚═══╝
+
+$WHITE Developed by $RED Spectrasonic
+$GREEN v1.1.3
+
+"
+
 # === Versions Variables ===
 #
 # Adventure-Text-Minimessage
@@ -116,17 +119,18 @@ PAPERWEIGHT_VERSION=$(curl -s https://plugins.gradle.org/plugin/io.papermc.paper
 PAPERAPI_VERSION="1.21.1"
 API_VERSION="1.21"
 ACF_VERSION="0.5.1"
-COMANDAPI_VERSION="10.1.2"
-# LOMBOK_VERSION="1.18.36"
-# MINIMESSAGE_VERSION="4.18.0"
 JAVA_VERSION="21"
-# GRADLE_SHADOW_VERSION="9.0.0-beta8"
 PLUGIN_VERSION="1.0.0"
 MAVEN_COMPILE_VERSION="3.14.0"
 MAVEN_SHADOW_VERSION="3.6.0"
 MAVEN_RESOURCES_VERSION="3.3.1"
 
 AUTHOR="spectrasonic"
+
+# LOMBOK_VERSION="1.18.36"
+# COMANDAPI_VERSION="10.1.2"
+# MINIMESSAGE_VERSION="4.18.0"
+# GRADLE_SHADOW_VERSION="9.0.0-beta8"
 
 COMPILER_SET=false
 
