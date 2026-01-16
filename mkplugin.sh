@@ -231,9 +231,9 @@ elif [ "$COMPILER" == "gradle" ]; then
 
     # gradle.properties
     printf "org.gradle.caching=true
-org.gradle.parallel=true
-org.gradle.configuration-cache=true
-org.gradle.daemon=true
+org.gradle.parallel=false
+# org.gradle.configuration-cache=true
+# org.gradle.daemon=true
 
 # Vars
 
