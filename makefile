@@ -6,6 +6,8 @@ BINDIR = $(PREFIX)/bin
 DATDIR = $(OPTDIR)/$(BIN)
 
 # all: build install
+	# not need to buiild
+
 
 # sudo make install
 install:
