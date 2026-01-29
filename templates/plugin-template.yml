@@ -1,6 +1,8 @@
 name: ${PROJECT_NAME}
 api: "${API_VERSION}"
-version: '${version}'
+version: "${version}"
 main: com.${AUTHOR}.${PROJECT_NAME}.Main
-api-version: '${API_VERSION}'
+api-version: "${API_VERSION}"
 authors: [Spectrasonic]
+depends: [CommandAPI]
+
