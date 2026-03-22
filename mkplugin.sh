@@ -40,6 +40,7 @@ function select_option {
         # Limpiar pantalla y mostrar opciones
         clear
         echo "${YELLOW}Use ↑/↓ para navegar, Enter para seleccionar:${RESET}"
+        echo "${GREEN}Selecciona la versión de la API de PAPER:${RESET}"
         echo
         for i in "${!options[@]}"; do
             if [[ $i -eq $selected ]]; then
