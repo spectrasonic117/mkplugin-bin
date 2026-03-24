@@ -187,7 +187,7 @@ fi
 # Select Minecraft Version
 echo "${YELLOW}Select Minecraft Version: ${RESET}"
 echo
-options=("1.20.1" "1.20.4" "1.21.1" "1.21.4" "1.21.8" "1.21.10" "1.21.11")
+options=("1.20.1" "1.20.4" "1.21.1" "1.21.4" "1.21.8" "1.21.10" "1.21.11" "26.1 (Experimental)")
 select_option "${options[@]}"
 choice=$?
 PAPERAPI_VERSION="${options[$choice]}"
@@ -199,6 +199,10 @@ case "$PAPERAPI_VERSION" in
         ;;
     1.21.*)
         API_VERSION="1.21"
+        ;;
+    26.*)
+        echo " ${BRED}${BLACK}Version experimental no Probada"
+        exit 1
         ;;
     *)
         API_VERSION="1.21"
@@ -231,10 +235,12 @@ elif [ "$COMPILER" == "gradle" ]; then
     cd "$PWD/$PROJECT_NAME"
 
     # gradle.properties
-    printf "org.gradle.caching=true
+        printf "org.gradle.caching=true
+org.gradle.configuration-cache=true
+org.gradle.configuration-cache.problems=warn
+org.gradle.daemon=true
+org.gradle.jvmargs=-Xmx2g -Dfile.encoding=UTF-8
 org.gradle.parallel=false
-# org.gradle.configuration-cache=true
-# org.gradle.daemon=true
 
 # Vars
 
