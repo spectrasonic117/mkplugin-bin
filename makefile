@@ -15,11 +15,13 @@ install:
 
 	cp ./$(BIN) $(BINDIR)/$(BIN)
 	cp ./$(BIN).sh $(DATDIR)/$(BIN).sh
+# 	cp ./py/mkplugin.py $(DATDIR)/mkplugin.py
 
 	cp -r ./templates $(DATDIR)
 
 	chmod +x $(BINDIR)/$(BIN)
 	chmod +x $(DATDIR)/$(BIN).sh
+# 	chmod +x $(DATDIR)/mkplugin.py
 
 	echo "Done"
 

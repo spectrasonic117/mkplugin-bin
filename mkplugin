@@ -3,3 +3,4 @@
 EXEC_BIN="mkplugin"
 EXEC_PATH="/opt/${EXEC_BIN}"
 exec ${EXEC_PATH}/${EXEC_BIN}.sh "$@"
+# exec python3 ${EXEC_PATH}/${EXEC_BIN}.py "$@"
