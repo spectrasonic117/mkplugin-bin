@@ -235,12 +235,11 @@ elif [ "$COMPILER" == "gradle" ]; then
     cd "$PWD/$PROJECT_NAME"
 
     # gradle.properties
-        printf "org.gradle.caching=true
+    printf "org.gradle.caching=true
+org.gradle.parallel=true
 org.gradle.configuration-cache=true
-org.gradle.configuration-cache.problems=warn
 org.gradle.daemon=true
-org.gradle.jvmargs=-Xmx2g -Dfile.encoding=UTF-8
-org.gradle.parallel=false
+org.gradle.jvmargs=-Xmx2g -XX:+UseG1GC -XX:MaxMetaspaceSize=512m
 
 # Vars
 
