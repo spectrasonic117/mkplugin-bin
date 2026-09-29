@@ -15,7 +15,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <!-- Dependencies version -->
-        <paper.version>${PAPERAPI_VERSION}-R0.1-SNAPSHOT</paper.version>
+        <paper.version>${PAPERAPI_VERSION}</paper.version>
         <commandapi.version>${COMANDAPI_VERSION}</commandapi.version>
         <lombok.version>${LOMBOK_VERSION}</lombok.version>
         <adventure.version>${MINIMESSAGE_VERSION}</adventure.version>

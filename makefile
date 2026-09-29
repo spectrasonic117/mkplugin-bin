@@ -12,12 +12,14 @@ DATDIR = $(OPTDIR)/$(BIN)
 # sudo make install
 install:
 	mkdir -p $(DATDIR)
+	mkdir -p $(BINDIR)
 
 	cp ./$(BIN) $(BINDIR)/$(BIN)
 	cp ./$(BIN).sh $(DATDIR)/$(BIN).sh
 # 	cp ./py/mkplugin.py $(DATDIR)/mkplugin.py
 
 	cp -r ./templates $(DATDIR)
+	cp -r ./skills $(DATDIR)
 
 	chmod +x $(BINDIR)/$(BIN)
 	chmod +x $(DATDIR)/$(BIN).sh

@@ -217,21 +217,31 @@ def main():
         "1.21.8",
         "1.21.10",
         "1.21.11",
-        "26.1 (Experimental)",
+        "26.1.2",
+        "26.2",
     ]
     mc_choice = select_option(mc_options)
     paperapi_version = mc_options[mc_choice]
 
-    # Determine API version based on selected Minecraft version
+    # Determine API version and set Java version based on selected Minecraft version
     if paperapi_version.startswith("1.20"):
         api_version = "1.20"
     elif paperapi_version.startswith("1.21"):
         api_version = "1.21"
     elif paperapi_version.startswith("26"):
-        print(f"{RED}Version experimental no Probada{RESET}")
-        sys.exit(1)
+        api_version = "26"
+        JAVA_VERSION = "25"
     else:
         api_version = "1.21"
+
+    # Set complete paperapi_version for templates
+    if paperapi_version.startswith("26"):
+        if compiler == "maven":
+            paperapi_version = f"[{paperapi_version}.build,)"
+        elif compiler == "gradle":
+            paperapi_version = f"{paperapi_version}.build.+"
+    else:
+        paperapi_version = f"{paperapi_version}-R0.1-SNAPSHOT"
 
     # --- Paths -----------------------------------------------------------
     # Template directory – default mirrors the original install location.
@@ -316,6 +326,16 @@ Minimessage={minimessage_version}
         urllib.request.urlretrieve(agents_url, agents_path)
     except Exception as e:
         print(f"{RED}Failed to download agents file: {e}{RESET}")
+
+    # Copy agent skills (.agents / .claude) into the project root
+    skills_dir = Path(opt_dir) / "mkplugin" / "skills"
+    for skills_name in (".agents", ".claude"):
+        skills_src = skills_dir / skills_name
+        if skills_src.is_dir():
+            skills_dest = project_path / skills_name
+            shutil.copytree(skills_src, skills_dest, dirs_exist_ok=True)
+            for ds_store in skills_dest.rglob(".DS_Store"):
+                ds_store.unlink()
 
     # Create source directories
     src_main = project_path / "src" / "main"

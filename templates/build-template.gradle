@@ -19,8 +19,8 @@ repositories {
 }
 
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:${minecraftVersion}-R0.1-SNAPSHOT") // Paper
-    // paperweight.paperDevBundle("${minecraftVersion}-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:${minecraftVersion}") // Paper
+    // paperweight.paperDevBundle("${minecraftVersion}")
 
     // CommandAPI
     compileOnly "dev.jorel:commandapi-paper-core:${CommandAPI}" // for External Dependencies

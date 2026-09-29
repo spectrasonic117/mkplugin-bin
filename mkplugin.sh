@@ -134,6 +134,7 @@ BASE_DIR="src/main"
 RESOURCES_DIR="${BASE_DIR}/resources"
 JAVA_DIR="${BASE_DIR}/java/com/${AUTHOR}/${PROJECT_NAME}"
 TEMPLATES_DIR="/opt/mkplugin/templates"
+SKILLS_DIR="/opt/mkplugin/skills"
 
 # Parse arguments
 if [ $# -eq 0 ]; then
@@ -187,7 +188,7 @@ fi
 # Select Minecraft Version
 echo "${YELLOW}Select Minecraft Version: ${RESET}"
 echo
-options=("1.20.1" "1.20.4" "1.21.1" "1.21.4" "1.21.8" "1.21.10" "1.21.11" "26.1 (Experimental)")
+options=("1.20.1" "1.20.4" "1.21.1" "1.21.4" "1.21.8" "1.21.10" "1.21.11" "26.1.2" "26.2")
 select_option "${options[@]}"
 choice=$?
 PAPERAPI_VERSION="${options[$choice]}"
@@ -196,16 +197,31 @@ PAPERAPI_VERSION="${options[$choice]}"
 case "$PAPERAPI_VERSION" in
     1.20.*)
         API_VERSION="1.20"
+        JAVA_VERSION="21"
         ;;
     1.21.*)
         API_VERSION="1.21"
+        JAVA_VERSION="21"
         ;;
     26.*)
-        echo " ${BRED}${BLACK}Version experimental no Probada"
-        exit 1
+        API_VERSION="26"
+        JAVA_VERSION="25"
         ;;
     *)
         API_VERSION="1.21"
+        ;;
+esac
+
+# Set complete PAPERAPI_VERSION for templates
+case "$PAPERAPI_VERSION" in
+    26.*)
+        case "$COMPILER" in
+            maven) PAPERAPI_VERSION="[${PAPERAPI_VERSION}.build,)" ;;
+            gradle) PAPERAPI_VERSION="${PAPERAPI_VERSION}.build.+" ;;
+        esac
+        ;;
+    1.20.*|1.21.*)
+        PAPERAPI_VERSION="${PAPERAPI_VERSION}-R0.1-SNAPSHOT"
         ;;
 esac
 
@@ -246,7 +262,7 @@ org.gradle.jvmargs=-Xmx2g -XX:+UseG1GC -XX:MaxMetaspaceSize=512m
 version=1.0.0
 group=com.spectrasonic
 projectName=$PROJECT_NAME
-javaVersion=21
+javaVersion=$JAVA_VERSION
 
 # Var Plugins
 gradlePaperweight=$PAPERWEIGHT_VERSION
@@ -278,6 +294,14 @@ fi
 
 # Download Paper Agent
 command curl https://gitlab.com/Spectrasonic/agents/-/raw/master/minecraft/papemc_plugin_agent-en.md -o ${PWD}/AGENTS.md
+
+# Copy Agent Skills (.agents / .claude) to project root
+for skills_folder in .agents .claude; do
+    if [ -d "$SKILLS_DIR/${skills_folder}" ]; then
+        cp -R "$SKILLS_DIR/${skills_folder}" "$PWD/"
+        find "$PWD/${skills_folder}" -name '.DS_Store' -type f -delete
+    fi
+done
 
 # Save Files
 mkdir -p "$PWD/src/main/resources"
