@@ -329,6 +329,8 @@ elif [ "$COMPILER" == "velocity" ]; then
     sed -i '' "s|\${PROJECT_NAME}|$PROJECT_NAME|g" "src/main/java/com/${AUTHOR}/${PROJECT_NAME}/Main.java"
     sed -i '' "s|\${PLUGIN_ID}|$PLUGIN_ID|g" "src/main/java/com/${AUTHOR}/${PROJECT_NAME}/Main.java"
     sed -i '' "s|\${PLUGIN_VERSION}|$PLUGIN_VERSION|g" "src/main/java/com/${AUTHOR}/${PROJECT_NAME}/Main.java"
+    cp "$TEMPLATES_DIR/Velocity-AGENTS-template.md" AGENTS.md
+    sed -i '' "s|\${PROJECT_NAME}|$PROJECT_NAME|g" AGENTS.md
 fi
 
 # Download Paper Agent

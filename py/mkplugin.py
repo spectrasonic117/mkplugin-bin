@@ -381,6 +381,9 @@ Minimessage={minimessage_version}
                 "PLUGIN_VERSION": PLUGIN_VERSION,
             },
         )
+        velocity_agents = project_path / "AGENTS.md"
+        shutil.copy(templates_dir / "Velocity-AGENTS-template.md", velocity_agents)
+        replace_placeholders(velocity_agents, {"PROJECT_NAME": project_name})
     else:
         print(f"{RED}Compilador no reconocido: {compiler}{RESET}")
         sys.exit(1)
