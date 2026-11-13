@@ -114,6 +114,7 @@ commandapi_content=$(curl -s "https://central.sonatype.com/artifact/dev.jorel/co
 COMANDAPI_VERSION=$(echo "$commandapi_content" | grep -oE 'pkg:maven/dev.jorel/commandapi@([0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9]+)?)' | sed 's/.*@//' | head -n 1)
 
 PAPERWEIGHT_VERSION=$(curl -s https://plugins.gradle.org/plugin/io.papermc.paperweight.userdev | grep -o 'Version [0-9.]*-beta.[0-9]*' | head -n 1 | sed 's/Version //')
+VELOCITY_API_VERSION=$(curl -fsSL "https://repo.papermc.io/repository/maven-public/com/velocitypowered/velocity-api/maven-metadata.xml" | sed -n 's:.*<release>\([^<]*\)</release>.*:\1:p' | head -n 1)
 
 # PAPERAPI_VERSION will be selected
 # API_VERSION will be determined based on version
@@ -155,27 +156,35 @@ elif [ $# -eq 2 ]; then
             COMPILER="maven"
             COMPILER_SET=true
             ;;
+        velocity)
+            COMPILER="velocity"
+            COMPILER_SET=true
+            ;;
         *)
-            echo "${RED}Compilador desconocido: $2. Usa 'gradle' o 'maven'."
+            echo "${RED}Opción desconocida: $2. Usa 'gradle', 'maven' o 'velocity'."
             exit 1
             ;;
     esac
 elif [ "$1" == "--help" ] || [ "$1" == "-h" ]; then
     echo "${RED}Uso:"
-    echo "${GREEN}mkplugin ${BLUE}<project-name> ${YELLOW}[gradle|maven]"
+    echo "${GREEN}mkplugin ${BLUE}<project-name> ${YELLOW}[gradle|maven|velocity]"
     exit 1
 else
-    echo "${RED}Demasiados argumentos. Uso: mkplugin <project-name> [gradle|maven]"
+    echo "${RED}Demasiados argumentos. Uso: mkplugin <project-name> [gradle|maven|velocity]"
     exit 1
 fi
 
 if [ "$COMPILER_SET" = false ]; then
     echo "${YELLOW}Select Compiler Project: ${RESET}"
     echo
-    options=("maven" "gradle")
+    options=("maven (Paper)" "gradle (Paper)" "velocity (Gradle)")
     select_option "${options[@]}"
     choice=$?
-    COMPILER="${options[$choice]}"
+    case "$choice" in
+        0) COMPILER="maven" ;;
+        1) COMPILER="gradle" ;;
+        2) COMPILER="velocity" ;;
+    esac
 fi
 
 if [ -z "$PROJECT_NAME" ]; then
@@ -185,15 +194,24 @@ elif [ -d "$PROJECT_NAME" ]; then
     exit 1
 fi
 
-# Select Minecraft Version
-echo "${YELLOW}Select Minecraft Version: ${RESET}"
-echo
-options=("1.20.1" "1.20.4" "1.21.1" "1.21.4" "1.21.8" "1.21.10" "1.21.11" "26.1.2" "26.2")
-select_option "${options[@]}"
-choice=$?
-PAPERAPI_VERSION="${options[$choice]}"
+if [ "$COMPILER" = "velocity" ]; then
+    JAVA_VERSION="25"
+    if [ -z "$VELOCITY_API_VERSION" ]; then
+        echo "${RED}No se pudo obtener la última versión de Velocity API desde PaperMC.${RESET}"
+        exit 1
+    fi
+else
+    # Select Minecraft Version
+    echo "${YELLOW}Select Minecraft Version: ${RESET}"
+    echo
+    options=("1.20.1" "1.20.4" "1.21.1" "1.21.4" "1.21.8" "1.21.10" "1.21.11" "26.1.2" "26.2")
+    select_option "${options[@]}"
+    choice=$?
+    PAPERAPI_VERSION="${options[$choice]}"
+fi
 
 # Set API_VERSION based on PAPERAPI_VERSION
+if [ "$COMPILER" != "velocity" ]; then
 case "$PAPERAPI_VERSION" in
     1.20.*)
         API_VERSION="1.20"
@@ -211,8 +229,10 @@ case "$PAPERAPI_VERSION" in
         API_VERSION="1.21"
         ;;
 esac
+fi
 
 # Set complete PAPERAPI_VERSION for templates
+if [ "$COMPILER" != "velocity" ]; then
 case "$PAPERAPI_VERSION" in
     26.*)
         case "$COMPILER" in
@@ -224,6 +244,7 @@ case "$PAPERAPI_VERSION" in
         PAPERAPI_VERSION="${PAPERAPI_VERSION}-R0.1-SNAPSHOT"
         ;;
 esac
+fi
 
 # Maven Project Config
 if [ "$COMPILER" == "maven" ]; then
@@ -290,13 +311,34 @@ Minimessage=$MINIMESSAGE_VERSION" > gradle.properties
     cp "$TEMPLATES_DIR/settings-template.gradle" settings.gradle
     sed -i '' "s|\${PROJECT_NAME}|$PROJECT_NAME|g" settings.gradle
 
+elif [ "$COMPILER" == "velocity" ]; then
+    echo "${CYAN}Velocity (Gradle) Selected${RESET}"
+    git clone git@github.com:spectrasonic117/mkplugin.git -q "$PWD/$PROJECT_NAME" --depth=1 --branch gradle
+    cd "$PWD/$PROJECT_NAME"
+    rm -rf src
+    mkdir -p "src/main/java/com/${AUTHOR}/${PROJECT_NAME}" src/main/resources
+    printf "version=%s\ngroup=com.%s\nprojectName=%s\njavaVersion=%s\nvelocityApiVersion=%s\n" \
+        "$PLUGIN_VERSION" "$AUTHOR" "$PROJECT_NAME" "$JAVA_VERSION" "$VELOCITY_API_VERSION" > gradle.properties
+    cp "$TEMPLATES_DIR/velocity-build-template.gradle" build.gradle
+    cp "$TEMPLATES_DIR/settings-template.gradle" settings.gradle
+    sed -i '' "s|\${PROJECT_NAME}|$PROJECT_NAME|g" settings.gradle
+    cp "$TEMPLATES_DIR/VelocityMain-template.java" "src/main/java/com/${AUTHOR}/${PROJECT_NAME}/Main.java"
+    PLUGIN_ID=$(echo "$PROJECT_NAME" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9_-]/-/g' | cut -c1-64)
+    case "$PLUGIN_ID" in [a-z]*) ;; *) PLUGIN_ID="plugin-${PLUGIN_ID}" ;; esac
+    sed -i '' "s|\${AUTHOR}|$AUTHOR|g" "src/main/java/com/${AUTHOR}/${PROJECT_NAME}/Main.java"
+    sed -i '' "s|\${PROJECT_NAME}|$PROJECT_NAME|g" "src/main/java/com/${AUTHOR}/${PROJECT_NAME}/Main.java"
+    sed -i '' "s|\${PLUGIN_ID}|$PLUGIN_ID|g" "src/main/java/com/${AUTHOR}/${PROJECT_NAME}/Main.java"
+    sed -i '' "s|\${PLUGIN_VERSION}|$PLUGIN_VERSION|g" "src/main/java/com/${AUTHOR}/${PROJECT_NAME}/Main.java"
 fi
 
 # Download Paper Agent
-command curl https://gitlab.com/Spectrasonic/agents/-/raw/master/minecraft/papemc_plugin_agent-en.md -o ${PWD}/AGENTS.md
+if [ "$COMPILER" != "velocity" ]; then
+    command curl https://gitlab.com/Spectrasonic/agents/-/raw/master/minecraft/papemc_plugin_agent-en.md -o ${PWD}/AGENTS.md
+fi
 
 # Copy Agent Skills (.agents / .claude) to project root
 for skills_folder in .agents .claude; do
+    [ "$COMPILER" = "velocity" ] && continue
     if [ -d "$SKILLS_DIR/${skills_folder}" ]; then
         cp -R "$SKILLS_DIR/${skills_folder}" "$PWD/"
         find "$PWD/${skills_folder}" -name '.DS_Store' -type f -delete
@@ -304,6 +346,7 @@ for skills_folder in .agents .claude; do
 done
 
 # Save Files
+if [ "$COMPILER" != "velocity" ]; then
 mkdir -p "$PWD/src/main/resources"
 mkdir -p "$PWD/src/main/java/com/${AUTHOR}/${PROJECT_NAME}"/{managers,commands,events,listeners,enums}
 
@@ -330,6 +373,7 @@ cp "$TEMPLATES_DIR/ConfigManager-template.java" "$PWD/src/main/java/com/${AUTHOR
 sed -i '' "s|\${AUTHOR}|$AUTHOR|g" "$PWD/src/main/java/com/${AUTHOR}/${PROJECT_NAME}/managers/ConfigManager.java"
 sed -i '' "s|\${PROJECT_NAME}|$PROJECT_NAME|g" "$PWD/src/main/java/com/${AUTHOR}/${PROJECT_NAME}/managers/ConfigManager.java"
 
+fi
 
 if [ -d .git ]; then
     command rm -rf .git/
@@ -345,5 +389,10 @@ command git checkout -b dev
 echo " "
 # Print Project Info
 echo "Project: ${MAGENTA}${PROJECT_NAME}${RESET} created successfully.${RESET}"
-echo "Compiler: ${CYAN}${COMPILER}${RESET}"
-echo "Paper: ${MAGENTA}${PAPERAPI_VERSION}"
+if [ "$COMPILER" = "velocity" ]; then
+    echo "Compiler: ${CYAN}gradle${RESET}"
+    echo "Platform: ${MAGENTA}Velocity API ${VELOCITY_API_VERSION}"
+else
+    echo "Compiler: ${CYAN}${COMPILER}${RESET}"
+    echo "Paper: ${MAGENTA}${PAPERAPI_VERSION}"
+fi

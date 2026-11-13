@@ -51,6 +51,18 @@ def fetch_latest_version(url: str, regex: str) -> str:
     return match.group(1) if match else ""
 
 
+def fetch_velocity_version() -> str:
+    """Return the latest released Velocity API version from PaperMC metadata."""
+    metadata_url = (
+        "https://repo.papermc.io/repository/maven-public/"
+        "com/velocitypowered/velocity-api/maven-metadata.xml"
+    )
+    version = fetch_latest_version(metadata_url, r"<release>([^<]+)</release>")
+    if not version:
+        raise RuntimeError("No se pudo obtener la última versión de Velocity API")
+    return version
+
+
 def select_option(options):
     """Present a list of *options* and return the selected index.
 
@@ -177,28 +189,31 @@ def main():
         elif comp_arg == "maven":
             compiler = "maven"
             compiler_set = True
+        elif comp_arg == "velocity":
+            compiler = "velocity"
+            compiler_set = True
         else:
             print(
-                f"{RED}Compilador desconocido: {comp_arg}. Usa 'gradle' o 'maven'.{RESET}"
+                f"{RED}Opción desconocida: {comp_arg}. Usa 'gradle', 'maven' o 'velocity'.{RESET}"
             )
             sys.exit(1)
     elif args[0] in ("--help", "-h"):
         print(
-            f"{RED}Uso:{RESET}\n{GREEN}mkplugin {BLUE}<project-name> {YELLOW}[gradle|maven]{RESET}"
+            f"{RED}Uso:{RESET}\n{GREEN}mkplugin {BLUE}<project-name> {YELLOW}[gradle|maven|velocity]{RESET}"
         )
         sys.exit(0)
     else:
         print(
-            f"{RED}Demasiados argumentos. Uso: mkplugin <project-name> [gradle|maven]{RESET}"
+            f"{RED}Demasiados argumentos. Uso: mkplugin <project-name> [gradle|maven|velocity]{RESET}"
         )
         sys.exit(1)
 
     # Prompt for compiler if not set
     if not compiler_set:
         print(f"{YELLOW}Select Compiler Project:{RESET}\n")
-        compiler_options = ["maven", "gradle"]
+        compiler_options = ["maven (Paper)", "gradle (Paper)", "velocity (Gradle)"]
         choice = select_option(compiler_options)
-        compiler = compiler_options[choice]
+        compiler = ["maven", "gradle", "velocity"][choice]
 
     # Prompt for project name if missing
     if not project_name:
@@ -207,24 +222,36 @@ def main():
         print(f"{RED}El proyecto ya existe, {WHITE}Usa otro nombre!{RESET}")
         sys.exit(1)
 
+    if compiler == "velocity":
+        JAVA_VERSION = "25"
+        velocity_api_version = fetch_velocity_version()
+        plugin_id = re.sub(r"[^a-z0-9_-]", "-", project_name.lower())[:64]
+        if not plugin_id or not plugin_id[0].isalpha():
+            plugin_id = f"plugin-{plugin_id}"[:64]
+    else:
+        velocity_api_version = None
+
     # --- Minecraft version selection ------------------------------------
-    print(f"{YELLOW}Select Minecraft Version:{RESET}\n")
-    mc_options = [
-        "1.20.1",
-        "1.20.4",
-        "1.21.1",
-        "1.21.4",
-        "1.21.8",
-        "1.21.10",
-        "1.21.11",
-        "26.1.2",
-        "26.2",
-    ]
-    mc_choice = select_option(mc_options)
-    paperapi_version = mc_options[mc_choice]
+    if compiler != "velocity":
+        print(f"{YELLOW}Select Minecraft Version:{RESET}\n")
+        mc_options = [
+            "1.20.1",
+            "1.20.4",
+            "1.21.1",
+            "1.21.4",
+            "1.21.8",
+            "1.21.10",
+            "1.21.11",
+            "26.1.2",
+            "26.2",
+        ]
+        mc_choice = select_option(mc_options)
+        paperapi_version = mc_options[mc_choice]
 
     # Determine API version and set Java version based on selected Minecraft version
-    if paperapi_version.startswith("1.20"):
+    if compiler == "velocity":
+        api_version = None
+    elif paperapi_version.startswith("1.20"):
         api_version = "1.20"
     elif paperapi_version.startswith("1.21"):
         api_version = "1.21"
@@ -235,7 +262,9 @@ def main():
         api_version = "1.21"
 
     # Set complete paperapi_version for templates
-    if paperapi_version.startswith("26"):
+    if compiler == "velocity":
+        pass
+    elif paperapi_version.startswith("26"):
         if compiler == "maven":
             paperapi_version = f"[{paperapi_version}.build,)"
         elif compiler == "gradle":
@@ -314,18 +343,57 @@ Minimessage={minimessage_version}
         replace_placeholders(
             project_path / "settings.gradle", {"PROJECT_NAME": project_name}
         )
+    elif compiler == "velocity":
+        print(f"{CYAN}Velocity (Gradle) Selected{RESET}")
+        run_cmd(
+            f"git clone git@github.com:spectrasonic117/mkplugin.git -q {project_path} --depth=1 --branch gradle"
+        )
+        shutil.rmtree(project_path / "src", ignore_errors=True)
+        (project_path / "src/main/java/com" / AUTHOR / project_name).mkdir(
+            parents=True, exist_ok=True
+        )
+        (project_path / "src/main/resources").mkdir(parents=True, exist_ok=True)
+        shutil.copy(
+            templates_dir / "velocity-build-template.gradle",
+            project_path / "build.gradle",
+        )
+        shutil.copy(
+            templates_dir / "settings-template.gradle", project_path / "settings.gradle"
+        )
+        replace_placeholders(
+            project_path / "settings.gradle", {"PROJECT_NAME": project_name}
+        )
+        (project_path / "gradle.properties").write_text(
+            f"version={PLUGIN_VERSION}\ngroup=com.{AUTHOR}\nprojectName={project_name}\n"
+            f"javaVersion={JAVA_VERSION}\nvelocityApiVersion={velocity_api_version}\n",
+            encoding="utf-8",
+        )
+        velocity_main = (
+            project_path / "src/main/java/com" / AUTHOR / project_name / "Main.java"
+        )
+        shutil.copy(templates_dir / "VelocityMain-template.java", velocity_main)
+        replace_placeholders(
+            velocity_main,
+            {
+                "AUTHOR": AUTHOR,
+                "PROJECT_NAME": project_name,
+                "PLUGIN_ID": plugin_id,
+                "PLUGIN_VERSION": PLUGIN_VERSION,
+            },
+        )
     else:
         print(f"{RED}Compilador no reconocido: {compiler}{RESET}")
         sys.exit(1)
 
     # --- Common setup ----------------------------------------------------
-    # Download PaperMC agent description
-    agents_url = "https://gitlab.com/Spectrasonic/agents/-/raw/master/minecraft/papemc_plugin_agent-en.md"
-    agents_path = project_path / "AGENTS.md"
-    try:
-        urllib.request.urlretrieve(agents_url, agents_path)
-    except Exception as e:
-        print(f"{RED}Failed to download agents file: {e}{RESET}")
+    # Download platform-specific agent description for Paper projects.
+    if compiler != "velocity":
+        agents_url = "https://gitlab.com/Spectrasonic/agents/-/raw/master/minecraft/papemc_plugin_agent-en.md"
+        agents_path = project_path / "AGENTS.md"
+        try:
+            urllib.request.urlretrieve(agents_url, agents_path)
+        except Exception as e:
+            print(f"{RED}Failed to download agents file: {e}{RESET}")
 
     # Copy agent skills (.agents / .claude) into the project root
     skills_dir = Path(opt_dir) / "mkplugin" / "skills"
@@ -337,47 +405,39 @@ Minimessage={minimessage_version}
             for ds_store in skills_dest.rglob(".DS_Store"):
                 ds_store.unlink()
 
-    # Create source directories
-    src_main = project_path / "src" / "main"
-    resources_dir = src_main / "resources"
-    java_base = src_main / "java" / "com" / AUTHOR / project_name
-    (java_base / "managers").mkdir(parents=True, exist_ok=True)
-    (java_base / "commands").mkdir(parents=True, exist_ok=True)
-    (java_base / "events").mkdir(parents=True, exist_ok=True)
-    (java_base / "listeners").mkdir(parents=True, exist_ok=True)
-    (java_base / "enums").mkdir(parents=True, exist_ok=True)
-    resources_dir.mkdir(parents=True, exist_ok=True)
+    if compiler != "velocity":
+        # Create source directories and Paper resources/classes.
+        src_main = project_path / "src" / "main"
+        resources_dir = src_main / "resources"
+        java_base = src_main / "java" / "com" / AUTHOR / project_name
+        for package in ("managers", "commands", "events", "listeners", "enums"):
+            (java_base / package).mkdir(parents=True, exist_ok=True)
+        resources_dir.mkdir(parents=True, exist_ok=True)
 
-    # Copy and process plugin.yml
-    plugin_yml_src = templates_dir / "plugin-template.yml"
-    plugin_yml_dest = resources_dir / "plugin.yml"
-    shutil.copy(plugin_yml_src, plugin_yml_dest)
-    replace_placeholders(
-        plugin_yml_dest,
-        {
-            "PROJECT_NAME": project_name,
-            "AUTHOR": AUTHOR,
-            "API_VERSION": api_version,
-        },
-    )
-
-    # Create empty config.yml
-    (resources_dir / "config.yml").touch()
-
-    # Copy Java class templates
-    java_templates = {
-        "Main-template.java": "Main.java",
-        "CommandManager-template.java": "managers/CommandManager.java",
-        "EventManager-template.java": "managers/EventManager.java",
-        "ConfigManager-template.java": "managers/ConfigManager.java",
-    }
-    for src_name, dest_rel in java_templates.items():
-        src_path = templates_dir / src_name
-        dest_path = java_base / dest_rel
-        shutil.copy(src_path, dest_path)
+        plugin_yml_dest = resources_dir / "plugin.yml"
+        shutil.copy(templates_dir / "plugin-template.yml", plugin_yml_dest)
         replace_placeholders(
-            dest_path, {"AUTHOR": AUTHOR, "PROJECT_NAME": project_name}
+            plugin_yml_dest,
+            {
+                "PROJECT_NAME": project_name,
+                "AUTHOR": AUTHOR,
+                "API_VERSION": api_version,
+            },
         )
+        (resources_dir / "config.yml").touch()
+
+        java_templates = {
+            "Main-template.java": "Main.java",
+            "CommandManager-template.java": "managers/CommandManager.java",
+            "EventManager-template.java": "managers/EventManager.java",
+            "ConfigManager-template.java": "managers/ConfigManager.java",
+        }
+        for src_name, dest_rel in java_templates.items():
+            dest_path = java_base / dest_rel
+            shutil.copy(templates_dir / src_name, dest_path)
+            replace_placeholders(
+                dest_path, {"AUTHOR": AUTHOR, "PROJECT_NAME": project_name}
+            )
 
     # Remove any existing .git directory from the cloned template
     git_dir = project_path / ".git"
@@ -392,8 +452,12 @@ Minimessage={minimessage_version}
 
     # --- Summary ---------------------------------------------------------
     print("\nProject: " + MAGENTA + project_name + RESET + " created successfully.")
-    print("Compiler: " + CYAN + compiler + RESET)
-    print("Paper: " + MAGENTA + paperapi_version + RESET)
+    if compiler == "velocity":
+        print("Compiler: " + CYAN + "gradle" + RESET)
+        print("Platform: " + MAGENTA + f"Velocity API {velocity_api_version}" + RESET)
+    else:
+        print("Compiler: " + CYAN + compiler + RESET)
+        print("Paper: " + MAGENTA + paperapi_version + RESET)
 
 
 if __name__ == "__main__":

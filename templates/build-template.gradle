@@ -42,9 +42,8 @@ dependencies {
 //     archiveFileName = "${rootProject.name}-${version}.jar"
 // }
 
-jar {
+tasks.withType(Jar).configureEach {
     destinationDirectory = file("${rootDir}/out")
-    archiveFileName = "${rootProject.name}-${version}.jar"
 }
 
 // build.dependsOn shadowJar
